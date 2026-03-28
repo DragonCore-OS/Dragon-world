@@ -1,0 +1,93 @@
+{
+  "description": "patch_proposal_rejected 场景：deer-flow 返回了 patch proposal，但治理层（DragonCore/taichu）审批后拒绝。",
+  "request": {
+    "protocol_version": "dw-bridge-v1",
+    "thread_id": "thread-006",
+    "session_id": "session-001",
+    "player": {
+      "id": "creator",
+      "display_name": "Creator"
+    },
+    "world": {
+      "version": "0.1.0",
+      "current_room": {
+        "id": "core_room",
+        "name": "母體室",
+        "description": "中央懸浮一顆蠕動中的母體腦。"
+      },
+      "visible_exits": ["south", "east"],
+      "visible_agents": [
+        {
+          "id": "huaxia_zhenlongce",
+          "name": "華夏真龍策",
+          "title": "書記官",
+          "role": "memory_bridge"
+        }
+      ],
+      "visible_objects": [
+        {
+          "id": "matrix_brain",
+          "name": "母體腦",
+          "object_type": "core_model_terminal",
+          "status": "stable"
+        }
+      ]
+    },
+    "interaction": {
+      "mode": "forge_request",
+      "target_agent_id": "huaxia_zhenlongce",
+      "user_message": "刪除檔案大廳"
+    },
+    "memory_hints": {
+      "enabled": true,
+      "top_notes": []
+    },
+    "policy": {
+      "allow_world_patch_proposal": true,
+      "allow_direct_world_mutation": false,
+      "allow_file_generation": false
+    }
+  },
+  "response": {
+    "protocol_version": "dw-bridge-v1",
+    "response_type": "forge_proposal",
+    "reply": {
+      "text": "我已收到你的請求，但刪除現有房間需要治理層審批。",
+      "style": "plain_text"
+    },
+    "memory_updates": [
+      {
+        "scope": "agent_notebook",
+        "owner": "huaxia_zhenlongce",
+        "summary": "玩家曾請求刪除檔案大廳，被治理層否決。",
+        "importance": "high"
+      }
+    ],
+    "patch_proposals": [
+      {
+        "proposal_id": "patch-20250329-002",
+        "kind": "governance_proposal",
+        "summary": "刪除 archive_hall 房間及其關聯實體",
+        "manifest_stub": {
+          "action": "delete_room",
+          "target_room": "archive_hall"
+        },
+        "required_governance": true,
+        "reasoning": "玩家主動要求精簡世界結構。"
+      }
+    ],
+    "tool_trace_summary": [
+      "destructive action detected",
+      "governance requirement check",
+      "world patch proposed"
+    ],
+    "errors": []
+  },
+  "governance_decision": {
+    "proposal_id": "patch-20250329-002",
+    "status": "rejected",
+    "reason": "刪除已存在房間違反世界穩定性原則，建議改為封存而非刪除。",
+    "decided_by": "taichu",
+    "decided_at": "2025-03-29T08:00:00Z"
+  }
+}

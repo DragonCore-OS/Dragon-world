@@ -1,0 +1,91 @@
+{
+  "description": "forge_request 场景：玩家请求在核心室南方新增一个培育房，deer-flow 返回 patch proposal。",
+  "request": {
+    "protocol_version": "dw-bridge-v1",
+    "thread_id": "thread-003",
+    "session_id": "session-001",
+    "player": {
+      "id": "creator",
+      "display_name": "Creator"
+    },
+    "world": {
+      "version": "0.1.0",
+      "current_room": {
+        "id": "core_room",
+        "name": "母體室",
+        "description": "中央懸浮一顆蠕動中的母體腦。"
+      },
+      "visible_exits": ["south", "east"],
+      "visible_agents": [
+        {
+          "id": "huaxia_zhenlongce",
+          "name": "華夏真龍策",
+          "title": "書記官",
+          "role": "memory_bridge"
+        }
+      ],
+      "visible_objects": [
+        {
+          "id": "matrix_brain",
+          "name": "母體腦",
+          "object_type": "core_model_terminal",
+          "status": "stable"
+        }
+      ]
+    },
+    "interaction": {
+      "mode": "forge_request",
+      "target_agent_id": "huaxia_zhenlongce",
+      "user_message": "在母體室南方新增一個高級培育房"
+    },
+    "memory_hints": {
+      "enabled": true,
+      "top_notes": [
+        "使用者偏好擴展基礎設施。"
+      ]
+    },
+    "policy": {
+      "allow_world_patch_proposal": true,
+      "allow_direct_world_mutation": false,
+      "allow_file_generation": false
+    }
+  },
+  "response": {
+    "protocol_version": "dw-bridge-v1",
+    "response_type": "forge_proposal",
+    "reply": {
+      "text": "我已為你擬定新增高級培育房的提案，請提交治理層審批。",
+      "style": "plain_text"
+    },
+    "memory_updates": [
+      {
+        "scope": "agent_notebook",
+        "owner": "huaxia_zhenlongce",
+        "summary": "使用者請求在 core_room 南方新增高級培育房。",
+        "importance": "high"
+      }
+    ],
+    "patch_proposals": [
+      {
+        "proposal_id": "patch-20250329-001",
+        "kind": "create_room",
+        "summary": "在 core_room 南方新增高級培育房",
+        "manifest_stub": {
+          "room_id": "advanced_nursery",
+          "parent_room": "core_room",
+          "direction": "south",
+          "name": "高級培育房",
+          "description": "配備強化胚胎池的進階培育設施。"
+        },
+        "required_governance": true,
+        "reasoning": "使用者主動要求擴展基礎設施，且 core_room 南方已有 nursery_room，可在此基礎上延伸。"
+      }
+    ],
+    "tool_trace_summary": [
+      "room layout analysis",
+      "governance requirement check",
+      "world patch proposed"
+    ],
+    "errors": []
+  }
+}

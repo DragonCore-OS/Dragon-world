@@ -1,0 +1,74 @@
+{
+  "description": "memory_update_proposal 场景：玩家与 Agent 对话后，deer-flow 建议更新 agent notebook，但不涉及世界变更。",
+  "request": {
+    "protocol_version": "dw-bridge-v1",
+    "thread_id": "thread-005",
+    "session_id": "session-001",
+    "player": {
+      "id": "creator",
+      "display_name": "Creator"
+    },
+    "world": {
+      "version": "0.1.0",
+      "current_room": {
+        "id": "nursery_room",
+        "name": "培育室",
+        "description": "胚胎池靜靜運轉，散發著微弱的生物光。"
+      },
+      "visible_exits": ["north"],
+      "visible_agents": [
+        {
+          "id": "nuwa",
+          "name": "女媧",
+          "title": "培育官",
+          "role": "embryo_keeper"
+        }
+      ],
+      "visible_objects": [
+        {
+          "id": "embryo_pool",
+          "name": "胚胎池",
+          "object_type": "biological_vessel",
+          "status": "stable"
+        }
+      ]
+    },
+    "interaction": {
+      "mode": "agent_dialogue",
+      "target_agent_id": "nuwa",
+      "user_message": "我比較喜歡讓胚胎在較低溫度下生長"
+    },
+    "memory_hints": {
+      "enabled": true,
+      "top_notes": [
+        "使用者對培育參數有明確偏好。"
+      ]
+    },
+    "policy": {
+      "allow_world_patch_proposal": false,
+      "allow_direct_world_mutation": false,
+      "allow_file_generation": false
+    }
+  },
+  "response": {
+    "protocol_version": "dw-bridge-v1",
+    "response_type": "agent_reply",
+    "reply": {
+      "text": "已記下你的偏好。未來我會在調整胚胎池參數時參考這一點。",
+      "style": "plain_text"
+    },
+    "memory_updates": [
+      {
+        "scope": "agent_notebook",
+        "owner": "nuwa",
+        "summary": "玩家偏好較低溫度的胚胎培育環境。",
+        "importance": "medium"
+      }
+    ],
+    "patch_proposals": [],
+    "tool_trace_summary": [
+      "memory update proposed"
+    ],
+    "errors": []
+  }
+}

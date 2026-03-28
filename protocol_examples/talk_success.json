@@ -1,0 +1,75 @@
+{
+  "description": "正常的 agent_dialogue 交互：玩家与华夏真龙策对话，请求整理最近三次世界改动。",
+  "request": {
+    "protocol_version": "dw-bridge-v1",
+    "thread_id": "thread-001",
+    "session_id": "session-001",
+    "player": {
+      "id": "creator",
+      "display_name": "Creator"
+    },
+    "world": {
+      "version": "0.1.0",
+      "current_room": {
+        "id": "core_room",
+        "name": "母體室",
+        "description": "中央懸浮一顆蠕動中的母體腦。"
+      },
+      "visible_exits": ["south", "east"],
+      "visible_agents": [
+        {
+          "id": "huaxia_zhenlongce",
+          "name": "華夏真龍策",
+          "title": "書記官",
+          "role": "memory_bridge"
+        }
+      ],
+      "visible_objects": [
+        {
+          "id": "matrix_brain",
+          "name": "母體腦",
+          "object_type": "core_model_terminal",
+          "status": "stable"
+        }
+      ]
+    },
+    "interaction": {
+      "mode": "agent_dialogue",
+      "target_agent_id": "huaxia_zhenlongce",
+      "user_message": "整理最近三次世界改動"
+    },
+    "memory_hints": {
+      "enabled": true,
+      "top_notes": [
+        "使用者正在建設 DragonWorld。",
+        "華夏真龍策負責記憶橋接。"
+      ]
+    },
+    "policy": {
+      "allow_world_patch_proposal": true,
+      "allow_direct_world_mutation": false,
+      "allow_file_generation": false
+    }
+  },
+  "response": {
+    "protocol_version": "dw-bridge-v1",
+    "response_type": "agent_reply",
+    "reply": {
+      "text": "已為你整理最近三次世界改動：\n1. 新增檔案大廳與太史錄官。\n2. 將 forge_table 拆分為議事廳與工坊兩個實體。\n3. 凍結 Phase 2 bridge 接口契約。",
+      "style": "plain_text"
+    },
+    "memory_updates": [
+      {
+        "scope": "agent_notebook",
+        "owner": "huaxia_zhenlongce",
+        "summary": "使用者要求回顧最近三次世界改動。",
+        "importance": "medium"
+      }
+    ],
+    "patch_proposals": [],
+    "tool_trace_summary": [
+      "memory lookup requested"
+    ],
+    "errors": []
+  }
+}

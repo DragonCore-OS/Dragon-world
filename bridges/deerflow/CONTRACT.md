@@ -1,8 +1,8 @@
 # deer-flow Bridge 接口契约
 
-**版本**：v0.1-draft  
-**状态**：设计稿，未实现  
-**目的**：定义 DragonWorld 内核与未来 deer-flow 服务之间的数据交换格式，防止接口漂移。
+**版本**：v1.0-freeze  
+**状态**：已冻结，Phase 2 执行基准  
+**目的**：钉死 DragonWorld 内核与 deer-flow runtime 之间的数据交换格式，防止接口漂移与越权修改。
 
 ---
 
@@ -18,6 +18,61 @@ DragonWorld Kernel          deer-flow Service
        |<--- Response Payload -----|
        |                           |
 ```
+
+**核心原则**：deer-flow 不直接修改世界状态，只能返回建议；世界变更的最终决定权在 DragonWorld Kernel + 治理层。
+
+---
+
+## 边界冻结声明
+
+### 边界 1：内核真相边界
+世界真相只能来自 DragonWorld：
+- `WorldState`
+- `WorldEvent`
+- `Room` / `Agent` / `Object`
+- `current_room`
+- `ledger_offset`
+- `version`
+
+**禁止 deer-flow 自己维护另一份“世界真相”。**
+
+### 边界 2：命令边界
+内核 parser 只接受 Phase 1 命令：
+- `/look`
+- `/go <direction>` / `/north` / `/south` / `/east` / `/west`
+- `/talk <agent>`
+- `/inspect <object>`
+- `/status`
+- `/help`
+- `exit` | `quit`
+
+Bridge 层新增命令入口（不直接进 world-core）：
+- `/say <text>`
+- `/ask <text>`
+- `/invoke <agent> <text>`
+
+### 边界 3：事件边界
+内核事件类型固定为 5 种：
+- `world_initialized`
+- `room_entered`
+- `talk_attempted`
+- `inspect_attempted`
+- `command_rejected`
+
+Bridge 事件单独存放，不混入内核事件 enum：
+- `runtime_invoked`
+- `runtime_replied`
+- `runtime_failed`
+- `memory_update_proposed`
+- `world_patch_proposed`
+- `world_patch_approved`
+- `world_patch_rejected`
+
+### 边界 4：Loader/Schema 边界
+`world-loader` 当前为手写解析器，对格式敏感。Phase 2 期间：
+- **禁止**扩展 YAML 结构
+- **禁止**新增复杂嵌套格式
+- **禁止**让 runtime 回写 seed world manifest
 
 ---
 
@@ -39,62 +94,87 @@ X-Request-ID: <uuid>
 
 ```json
 {
-  "thread_id": "uuid-of-conversation-thread",
-  "current_room": {
-    "id": "core_room",
-    "name": "核心控制室",
-    "description": "DragonWorld 的心脏...",
-    "ambient_text": "矩阵脑核发出低沉的嗡鸣..."
+  "protocol_version": "dw-bridge-v1",
+  "thread_id": "thread-001",
+  "session_id": "session-001",
+  "player": {
+    "id": "creator",
+    "display_name": "Creator"
   },
-  "visible_agents": [
-    {
-      "id": "huaxia_zhenlongce",
-      "name": "华夏真龙策",
-      "title": "世界书记",
-      "role": "secretary",
-      "greeting": "书记者已在案。请吩咐。",
-      "memory_namespace": "huaxia_zhenlongce"
-    }
-  ],
-  "visible_objects": [
-    {
-      "id": "matrix_brain",
-      "name": "矩阵脑核",
-      "type": "core_computing",
-      "status_text": "矩阵脑核运行正常，世界版本稳定。"
-    }
-  ],
-  "player_message": "告诉我当前世界的稳定指数。",
-  "memory_hints": {
-    "l0_context": ["玩家刚刚查看了矩阵脑核", "玩家连续第三次询问系统状态"],
-    "l1_session": {"player_focus": "system_status", "mood": "curious"},
-    "l2_agent_notebook": ["该玩家偏好精确的数据回答", "避免使用过于诗意的修辞"],
-    "l3_recent_events": [
-      {"type": "PlayerInspected", "target": "matrix_brain", "timestamp": "..."}
+  "world": {
+    "version": "0.1.0",
+    "current_room": {
+      "id": "core_room",
+      "name": "母體室",
+      "description": "中央懸浮一顆蠕動中的母體腦。"
+    },
+    "visible_exits": ["south", "east"],
+    "visible_agents": [
+      {
+        "id": "huaxia_zhenlongce",
+        "name": "華夏真龍策",
+        "title": "書記官",
+        "role": "memory_bridge"
+      }
     ],
-    "l4_canon_facts": ["矩阵脑核是 DragonWorld 的中央处理器"]
+    "visible_objects": [
+      {
+        "id": "matrix_brain",
+        "name": "母體腦",
+        "object_type": "core_model_terminal",
+        "status": "stable"
+      }
+    ]
   },
-  "skill_scope": ["record_keeping", "state_inquiry"],
-  "target_agent_id": "huaxia_zhenlongce",
-  "world_version": "1.0.0-alpha.3",
-  "timestamp": "2024-01-15T08:30:00Z"
+  "interaction": {
+    "mode": "agent_dialogue",
+    "target_agent_id": "huaxia_zhenlongce",
+    "user_message": "整理最近三次世界改動"
+  },
+  "memory_hints": {
+    "enabled": true,
+    "top_notes": [
+      "使用者正在建設 DragonWorld。",
+      "華夏真龍策負責記憶橋接。"
+    ]
+  },
+  "policy": {
+    "allow_world_patch_proposal": true,
+    "allow_direct_world_mutation": false,
+    "allow_file_generation": false
+  }
 }
 ```
 
 ### 字段说明
 
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| `thread_id` | string | 对话线程唯一标识，用于 deer-flow 维护多轮上下文 |
-| `current_room` | object | 玩家当前所在房间的完整信息 |
-| `visible_agents` | array | 当前房间中可见的 Agent 列表 |
-| `visible_objects` | array | 当前房间中可见的 Object 列表 |
-| `player_message` | string | 玩家发送给目标 Agent 的原始消息 |
-| `memory_hints` | object | 各层记忆的摘要提示，deer-flow 可选择性使用 |
-| `skill_scope` | array | 目标 Agent 的技能列表，用于约束回复范围 |
-| `target_agent_id` | string | 玩家正在对话的目标 Agent ID |
-| `world_version` | string | 当前世界版本号 |
-| `timestamp` | string | ISO 8601 格式的时间戳 |
+| 字段 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `protocol_version` | string | 是 | 固定为 `dw-bridge-v1` |
+| `thread_id` | string | 是 | 对话线程唯一标识 |
+| `session_id` | string | 是 | 当前会话唯一标识 |
+| `player` | object | 是 | 玩家身份信息 |
+| `world` | object | 是 | 当前世界上下文（只读快照） |
+| `world.current_room` | object | 是 | 玩家当前所在房间 |
+| `world.visible_exits` | array | 是 | 当前房间可见出口方向列表 |
+| `world.visible_agents` | array | 是 | 当前房间可见 Agent 列表（精简字段） |
+| `world.visible_objects` | array | 是 | 当前房间可见 Object 列表（精简字段） |
+| `interaction` | object | 是 | 本次交互信息 |
+| `interaction.mode` | string | 是 | 交互模式：`agent_dialogue` / `world_query` / `forge_request` |
+| `interaction.target_agent_id` | string | 条件 | `agent_dialogue` 模式下必填 |
+| `interaction.user_message` | string | 是 | 玩家发送的原始消息 |
+| `memory_hints` | object | 否 | 记忆提示，runtime 可选择性使用 |
+| `policy` | object | 否 | 权限策略声明 |
+| `policy.allow_world_patch_proposal` | bool | 否 | 是否允许返回 patch proposal |
+| `policy.allow_direct_world_mutation` | bool | 否 | **必须始终为 false** |
+| `policy.allow_file_generation` | bool | 否 | 是否允许生成文件建议 |
+
+### 请求约束
+
+- **不传递**整个 `WorldState`
+- **不传递**所有房间全文
+- **不传递**整个事件 ledger
+- **不传递**所有 agent notebook 内容
 
 ---
 
@@ -112,27 +192,37 @@ X-Request-ID: <uuid>
 
 ```json
 {
-  "reply_text": "根据矩阵脑核的最新读数，当前世界稳定指数为 98.7%，所有核心系统运行正常。",
-  "artifact_refs": [
+  "protocol_version": "dw-bridge-v1",
+  "response_type": "agent_reply",
+  "reply": {
+    "text": "我已為你整理最近三次世界改動。",
+    "style": "plain_text"
+  },
+  "memory_updates": [
     {
-      "type": "object",
-      "id": "matrix_brain",
-      "reason": "回复中引用了该物品的状态数据"
+      "scope": "agent_notebook",
+      "owner": "huaxia_zhenlongce",
+      "summary": "使用者要求回顧最近三次世界改動。",
+      "importance": "medium"
     }
   ],
-  "memory_updates": {
-    "l0_context": "玩家关注系统稳定性",
-    "l2_agent_notebook": "记录玩家偏好精确数据"
-  },
-  "proposed_world_patch": null,
-  "tool_trace_summary": [
-    {"tool": "state_query", "target": "matrix_brain", "result": "stable_index: 98.7%"}
+  "patch_proposals": [
+    {
+      "proposal_id": "patch-001",
+      "kind": "create_room",
+      "summary": "在 core_room 南方新增培育房",
+      "manifest_stub": {
+        "room_id": "nursery_room_v2",
+        "parent_room": "core_room",
+        "direction": "south"
+      }
+    }
   ],
-  "meta": {
-    "model": "deer-flow-v1",
-    "latency_ms": 340,
-    "finish_reason": "stop"
-  }
+  "tool_trace_summary": [
+    "memory lookup requested",
+    "world patch proposed"
+  ],
+  "errors": []
 }
 ```
 
@@ -140,55 +230,144 @@ X-Request-ID: <uuid>
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
-| `reply_text` | string | Agent 回复玩家的最终文本 |
-| `artifact_refs` | array | 回复中引用的世界实体，用于内核做链接高亮 |
-| `memory_updates` | object | deer-flow 建议更新的记忆摘要 |
-| `proposed_world_patch` | object/null | 如果对话触发了世界变更，返回建议的补丁 |
-| `tool_trace_summary` | array | deer-flow 内部调用的工具/查询摘要，用于审计 |
-| `meta` | object | 生成元数据，可选 |
+| `protocol_version` | string | 固定为 `dw-bridge-v1` |
+| `response_type` | string | `agent_reply` / `query_result` / `forge_proposal` / `runtime_error` |
+| `reply` | object | 回复文本，`text` 为必填，`style` 可选 |
+| `memory_updates` | array | 建议的记忆更新列表 |
+| `patch_proposals` | array | 建议的世界变更补丁列表 |
+| `tool_trace_summary` | array | 工具调用摘要，用于审计 |
+| `errors` | array | 错误信息列表，非空时内核应降级处理 |
+
+### 响应约束
+
+**deer-flow 允许返回：**
+- `reply.text`
+- `memory_updates`
+- `patch_proposals`
+- `tool_trace_summary`
+- `errors`
+
+**deer-flow 不允许返回：**
+- 完整替换后的 `WorldState`
+- 直接修改后的 room graph
+- 直接覆写 YAML 的内容
+- 直接宣告“已创建房间”或“已写入世界”
+
+**它只能说：“我提议”，不能说 “我已经改了”。**
 
 ---
 
-## proposed_world_patch 格式
+## 交互模式定义
 
-当玩家对话可能触发世界状态变更时（如"打开那扇门"、"批准这个提案"），deer-flow 可以返回一个建议补丁：
+Bridge 只允许以下 3 种 `interaction.mode`：
+
+### mode 1: `agent_dialogue`
+与房间内 Agent 对话。
+- 示例：`/talk 華夏真龍策` → `/say 幫我整理最近三次改動`
+- 预期输出：`reply.text`
+- 可选：`memory_updates`
+- **不应输出 `patch_proposals`**，除非明确进入 forge 类请求
+
+### mode 2: `world_query`
+查询世界，不修改世界。
+- 示例：“目前房间有哪些可见 agent？”
+- **规则**：能由 kernel 直接回答的查询，优先不调 runtime。
+- 预期输出：`reply.text` 或 `query_result`
+
+### mode 3: `forge_request`
+只有在明确请求建造 / 生成时才允许。
+- 示例：“新增一个培育房”、“创造一个审计型 agent”
+- 预期输出：`patch_proposals`
+- **禁止**：直接改世界
+
+---
+
+## Patch Proposal 格式
 
 ```json
 {
-  "proposed_world_patch": {
-    "patch_id": "patch-uuid",
-    "patch_type": "OBJECT_STATE_CHANGE",
-    "target": {
-      "type": "object",
-      "id": "archive_console"
-    },
-    "changes": {
-      "status_text": "档案控制台已解锁，正在加载加密档案..."
-    },
-    "reasoning": "玩家获得了太史录官的授权，请求解锁档案控制台。",
-    "required_governance": false
-  }
+  "proposal_id": "patch-001",
+  "kind": "create_room",
+  "summary": "在 core_room 南方新增培育房",
+  "manifest_stub": {
+    "room_id": "nursery_room_v2",
+    "parent_room": "core_room",
+    "direction": "south"
+  },
+  "required_governance": true,
+  "reasoning": "使用者要求擴展培育設施。"
 }
 ```
 
-### 补丁类型枚举
+### `kind` 枚举（Phase 2 冻结）
 
-- `OBJECT_STATE_CHANGE` — 改变 Object 状态
-- `AGENT_MEMORY_UPDATE` — 更新 Agent Notebook
-- `ROOM_OCCUPANCY_CHANGE` — 改变房间内的 Agent/Object 分布
-- `GOVERNANCE_PROPOSAL` — 发起需要表决的治理提案
+- `create_room` — 创建新房间
+- `create_agent` — 创建新 Agent
+- `create_object` — 创建新 Object
+- `object_state_change` — 改变 Object 状态
+- `agent_memory_update` — 更新 Agent Notebook（通过 proposal 形式）
+- `governance_proposal` — 发起需要表决的治理提案
+
+### Patch 处理流程
+
+1. deer-flow 返回 `patch_proposals`
+2. Kernel 将其序列化到 `proposals/patch-<id>.json`
+3. **不直接 apply**
+4. 由 DragonCore / taichu 治理层审批
+5. 审批通过后，由 Kernel 执行并记录 `world_patch_approved` 事件
+6. 审批拒绝则记录 `world_patch_rejected` 事件
 
 ---
 
-## 安全与约束
+## 权限矩阵
 
-1. **deer-flow 不直接修改世界状态**：它只能返回 `proposed_world_patch`，最终是否应用由内核决定。
-2. **技能边界**：deer-flow 必须根据 `skill_scope` 约束回复内容，不能赋予 Agent 超出其技能的能力。
-3. **记忆提示非强制**：`memory_hints` 是提示而非指令，deer-flow 可以选择性忽略。
-4. **超时策略**：内核应设置合理的请求超时（建议 10 秒），超时后回退到 deterministic stub 回复。
+| 操作 | DragonWorld Kernel | deer-flow | DragonCore / taichu |
+|------|-------------------|-----------|---------------------|
+| 解析命令 | ✅ | ❌ | ❌ |
+| 执行确定性行为（/go, /look） | ✅ | ❌ | ❌ |
+| 更新 `current_room` | ✅ | ❌ | ❌ |
+| 保存/加载 snapshot | ✅ | ❌ | ❌ |
+| 生成对话文本 | ❌ | ✅ | ❌ |
+| 生成记忆更新建议 | ❌ | ✅ | ❌ |
+| 生成 patch proposal | ❌ | ✅ | ❌ |
+| 审批 patch proposal | ❌ | ❌ | ✅ |
+| Veto / Archive / Rollback | ❌ | ❌ | ✅ |
+
+---
+
+## Bridge MVP 目标
+
+Phase 2 Bridge 最小可交付版本只做三件事：
+
+1. **`/talk <agent>` 从 stub 升级为 bridge 调用**
+   - Kernel 验证 agent 在房间内
+   - 将请求送到 deer-flow
+   - 收回 `reply.text` 显示给玩家
+
+2. **`memory_updates` 先只写到暂存文件**
+   - 不直接接正式记忆库
+   - 暂存路径：`runtime_state/memory/<agent_id>/<timestamp>.json`
+
+3. **`patch_proposals` 只落到文件系统**
+   - 存储路径：`proposals/patch-<proposal_id>.json`
+   - **禁止直接 apply**
+
+---
+
+## Phase 2 禁止事项
+
+在接口冻结期间，以下事项一律不做：
+
+- [ ] runtime 直接改 YAML
+- [ ] auto-approve patch
+- [ ] 多 agent 同时写世界
+- [ ] 把 deer-flow state 当作世界 state
+- [ ] 自然语言直接映射为内核命令
+- [ ] 把治理层塞进 `dragon-world` crate
 
 ---
 
 ## 变更日志
 
+- **v1.0-freeze** (2025-03-29): 接口冻结，与 Phase 1 Recovery 内核对齐，明确边界与权限矩阵
 - **v0.1-draft** (2024-01-15): 初始契约草稿

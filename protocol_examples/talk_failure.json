@@ -1,0 +1,70 @@
+{
+  "description": "agent_dialogue 失败场景：玩家尝试与不在当前房间的 Agent 对话，deer-flow 返回错误。",
+  "request": {
+    "protocol_version": "dw-bridge-v1",
+    "thread_id": "thread-002",
+    "session_id": "session-001",
+    "player": {
+      "id": "creator",
+      "display_name": "Creator"
+    },
+    "world": {
+      "version": "0.1.0",
+      "current_room": {
+        "id": "core_room",
+        "name": "母體室",
+        "description": "中央懸浮一顆蠕動中的母體腦。"
+      },
+      "visible_exits": ["south", "east"],
+      "visible_agents": [
+        {
+          "id": "huaxia_zhenlongce",
+          "name": "華夏真龍策",
+          "title": "書記官",
+          "role": "memory_bridge"
+        }
+      ],
+      "visible_objects": [
+        {
+          "id": "matrix_brain",
+          "name": "母體腦",
+          "object_type": "core_model_terminal",
+          "status": "stable"
+        }
+      ]
+    },
+    "interaction": {
+      "mode": "agent_dialogue",
+      "target_agent_id": "nuwa",
+      "user_message": "妳在嗎？"
+    },
+    "memory_hints": {
+      "enabled": false,
+      "top_notes": []
+    },
+    "policy": {
+      "allow_world_patch_proposal": false,
+      "allow_direct_world_mutation": false,
+      "allow_file_generation": false
+    }
+  },
+  "response": {
+    "protocol_version": "dw-bridge-v1",
+    "response_type": "runtime_error",
+    "reply": {
+      "text": "目標 Agent 不在當前房間，無法建立對話。",
+      "style": "plain_text"
+    },
+    "memory_updates": [],
+    "patch_proposals": [],
+    "tool_trace_summary": [
+      "agent visibility check failed"
+    ],
+    "errors": [
+      {
+        "code": "AGENT_NOT_VISIBLE",
+        "message": "target_agent_id 'nuwa' is not in current_room 'core_room'"
+      }
+    ]
+  }
+}
