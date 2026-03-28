@@ -1,0 +1,16 @@
+[workspace]
+members = [
+  "apps/cli",
+  "crates/world-core",
+  "crates/world-loader",
+  "crates/command-parser",
+  "crates/event-store",
+  "crates/snapshot",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+version = "0.1.0"
+license = "MIT"
+authors = ["DragonWorld Contributors"]

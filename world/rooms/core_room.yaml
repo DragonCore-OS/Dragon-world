@@ -1,22 +1,12 @@
 id: core_room
-name: 核心控制室
-kind: control
-description: |
-  DragonWorld 的心脏。四壁由暗金色的合金铸成，中央悬浮着一颗缓慢脉动的光球——矩阵脑核。
-  这里是世界状态的最终锚点，所有重大决策与系统补丁都从这里发出。
-short_description: 世界核心控制室，矩阵脑核悬浮于中央。
-ambient_text:
-  - 矩阵脑核发出低沉的嗡鸣，光芒随系统负载轻微起伏。
-  - 墙壁上流淌着淡蓝色的数据流，显示着当前世界的稳定指数。
-  - 空气中弥漫着冷却液的气味，温度比其它房间低三度。
+name: Core Room
+description: The deterministic heart of DragonWorld where bootstrap records are maintained.
 exits:
-  south: archive_hall
-  east: nursery_room
-objects:
-  - matrix_brain
+  south: nursery_room
+  east: archive_hall
+objects: []
 agents:
   - huaxia_zhenlongce
-tags:
-  - core
-  - control
-  - restricted
+permissions:
+  - read
+  - write

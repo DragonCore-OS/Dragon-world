@@ -1,19 +1,6 @@
 id: embryo_pool
-name: 胚胎池
+name: Embryo Pool
 type: biological_vessel
 room: nursery_room
-description: |
-  一座直径约四米的圆形池子，池中盛满淡绿色的营养液，液面下隐约可见数个发光的胚胎轮廓。
-  这是 DragonWorld 创造新生命的摇篮，女娲在这里设计、培育与修复生物原型。
-  池壁刻有古老的基因符文，维持着生命所需的精确环境。
-interactions:
-  inspect:
-    text: "营养液轻轻荡漾，你能看到三个胚胎正处于不同的发育阶段。"
-    effect: "显示当前胚胎数量与发育状态"
-  sample:
-    text: "你小心地提取了一小份营养液样本，液体在试管中发出柔和的荧光。"
-    effect: "获得营养液样本（道具）"
-  activate:
-    text: "女娲轻轻触碰池壁符文，其中一个胚胎的光芒变得更加明亮。"
-    effect: "尝试激活指定胚胎（需女娲权限）"
-status_text: "胚胎池温度 37.2°C，pH 值稳定，三个胚胎发育正常。"
+interactions: [inspect, sample, activate]
+status: incubating

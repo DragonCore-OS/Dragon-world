@@ -1,0 +1,4 @@
+/target
+world/.last_snapshot.json
+*.orig
+*.rej

@@ -1,23 +1,13 @@
 id: archive_hall
-name: 档案大厅
-kind: archive
-description: |
-  一座环形的巨大厅堂，墙壁上排列着无数发光的档案格。
-  这里保存着 DragonWorld 自诞生以来的所有事件记录、记忆碎片与治理决议。
-  太史录官常驻于此，确保没有任何一段历史被遗忘。
-short_description: 环形档案厅堂，存放着世界的全部历史记录。
-ambient_text:
-  - 档案格中的光点忽明忽暗，仿佛在低声诉说着过去的事件。
-  - 太史录官的笔尖划过羊皮纸，发出沙沙的声响。
-  - 某处档案格突然亮起，意味着一段新的记忆被永久封存。
+name: Archive Hall
+description: Shelves of immutable timelines and governance annex references.
 exits:
-  north: core_room
+  west: core_room
   east: council_hall
 objects:
+  - matrix_brain
   - archive_console
 agents:
   - taishi_recorder
-tags:
-  - archive
-  - history
-  - quiet
+permissions:
+  - read

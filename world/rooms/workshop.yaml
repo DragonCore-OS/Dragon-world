@@ -1,23 +1,12 @@
 id: workshop
-name: 工坊
-kind: production
-description: |
-  充满金属敲击声与电弧光芒的房间，四周摆满了半成品装置与工具架。
-  天工监理在这里监督着世界基础设施的建造与维护。
-  空气中弥漫着机油与臭氧的味道，创造力与秩序在此交汇。
-short_description: 机械工坊，电弧与锤击声此起彼伏。
-ambient_text:
-  - 一台自动车床突然启动，切削出某个精密零件的轮廓。
-  - 天工监理的机械臂在空中划出精确的轨迹，检查着工件尺寸。
-  - 墙上的工具架自行整理，将使用完毕的器具归位。
+name: Workshop
+description: A production floor filled with metalwork, arcs of light, and half-built devices.
 exits:
   north: nursery_room
   east: observatory
 objects:
-  - forge_table
+  - forge_table_workshop
 agents:
   - tiangong_supervisor
-tags:
-  - production
-  - mechanical
-  - noisy
+permissions:
+  - read

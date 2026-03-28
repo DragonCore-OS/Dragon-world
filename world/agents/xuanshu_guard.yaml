@@ -9,13 +9,6 @@ skills:
   - threat_detection
   - order_enforcement
   - incident_reporting
-greeting: "议事厅重地，请出示你的访问凭证。若无凭证，请说明来意。"
-fallback_lines:
-  - "未经授权，不得进入议事厅核心区域。"
-  - "检测到异常行为模式，我已记录并上报。"
-  - "该请求违反当前治理协议，无法执行。"
-memory_namespace: xuanshu_guard
-notes: |
-  玄枢守卫是 DragonWorld 的秩序维护者，常驻议事厅门口，确保治理流程不受干扰。
-  他严肃、警觉，对规则有着近乎偏执的坚持。
-  在 Phase 1，他主要负责验证玩家权限、报告异常行为、维护议事厅安全。
+memory_namespace: world.xuanshu
+governance:
+  mode: enforcement
