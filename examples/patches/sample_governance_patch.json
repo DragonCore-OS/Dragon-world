@@ -1,0 +1,25 @@
+{
+  "patch_id": "patch-sample-002",
+  "patch_type": "GOVERNANCE_PROPOSAL",
+  "target": {
+    "type": "world_rule",
+    "rule_name": "agent_movement_policy"
+  },
+  "changes": {
+    "rule_value": "allow_limited",
+    "constraints": {
+      "max_rooms_per_day": 3,
+      "requires_guard_approval": true
+    }
+  },
+  "reasoning": "为了提升世界的动态性，建议允许 Agent 在获得守卫批准的情况下，每天最多移动 3 个房间。",
+  "required_governance": true,
+  "vote_threshold": 3,
+  "proposed_by": "huaxia_zhenlongce",
+  "proposed_at": "2024-01-15T11:00:00Z",
+  "votes": {
+    "huaxia_zhenlongce": "approve",
+    "xuanshu_guard": "pending",
+    "taishi_recorder": "pending"
+  }
+}

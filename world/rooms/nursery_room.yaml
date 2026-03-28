@@ -1,0 +1,23 @@
+id: nursery_room
+name: 培育室
+kind: biological
+description: |
+  温暖而湿润的房间，四壁覆盖着生物发光苔藓。
+  中央是一座巨大的胚胎池，淡绿色的营养液中漂浮着尚未激活的生命原型。
+  女娲守护着这里，她是创造与修复的化身。
+short_description: 生命培育之所，胚胎池散发着柔和的绿光。
+ambient_text:
+  - 胚胎池中的液体轻轻荡漾，偶尔有气泡缓缓上升。
+  - 女娲低声哼唱着某种古老的调子，声音在房间中回荡。
+  - 生物发光苔藓随着呼吸节奏明暗变化，让人感到宁静。
+exits:
+  west: core_room
+  south: workshop
+objects:
+  - embryo_pool
+agents:
+  - nuwa
+tags:
+  - biological
+  - creation
+  - warm

@@ -1,0 +1,21 @@
+{
+  "patch_id": "patch-sample-001",
+  "patch_type": "OBJECT_STATE_CHANGE",
+  "target": {
+    "type": "object",
+    "id": "archive_console"
+  },
+  "changes": {
+    "status_text": "档案控制台已解锁，正在加载加密档案...",
+    "interactions": {
+      "query": {
+        "text": "控制台响应速度提升，已解锁高级检索功能。",
+        "effect": "显示最近 20 条事件记录（含加密级别 L2 及以下）"
+      }
+    }
+  },
+  "reasoning": "玩家获得了太史录官的授权，请求解锁档案控制台的高级功能。",
+  "required_governance": false,
+  "proposed_by": "taishi_recorder",
+  "proposed_at": "2024-01-15T10:00:00Z"
+}

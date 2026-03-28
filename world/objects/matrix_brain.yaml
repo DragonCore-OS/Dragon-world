@@ -1,0 +1,19 @@
+id: matrix_brain
+name: 矩阵脑核
+type: core_computing
+room: core_room
+description: |
+  一颗悬浮于核心控制室中央的巨型光球，直径约两米，表面由无数六边形光栅组成。
+  它是 DragonWorld 的中央处理器，负责维护世界状态的最终一致性。
+  任何重大补丁在生效前，都必须经过矩阵脑核的验证与签名。
+interactions:
+  inspect:
+    text: "矩阵脑核的光芒稳定地脉动着，当前系统负载显示为正常。"
+    effect: "显示当前世界版本与核心状态摘要"
+  touch:
+    text: "你的指尖触碰到光栅表面，一阵温暖的能量流过，但脑核并未对你开放更深层的接口。"
+    effect: "无实质效果，记录一次交互日志"
+  sync:
+    text: "脑核开始与外部节点进行状态同步，光栅闪烁频率加快。"
+    effect: "触发状态同步检查（仅高权限可用）"
+status_text: "矩阵脑核运行正常，世界版本稳定。"

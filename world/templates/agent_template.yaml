@@ -1,0 +1,21 @@
+# Agent Manifest 模板
+# 复制此文件并重命名为 <agent_id>.yaml，然后填入具体内容。
+
+id: <agent_id>
+name: <显示名称>
+title: <头衔>
+role: <secretary | creator | engineer | guard | archivist | ...>
+owner_room: <所属房间 id>
+supervisor: <上级 agent id 或 null>
+skills:
+  - <skill_1>
+  - <skill_2>
+  - <skill_3>
+greeting: "<初次见面时的问候语>"
+fallback_lines:
+  - "<无法处理请求时的回覆 1>"
+  - "<无法处理请求时的回覆 2>"
+  - "<无法处理请求时的回覆 3>"
+memory_namespace: <agent_id>
+notes: |
+  <关于该角色的补充说明，包括性格、背景、职责范围等。>

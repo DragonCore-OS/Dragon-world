@@ -1,0 +1,19 @@
+id: archive_console
+name: 档案控制台
+type: terminal
+room: archive_hall
+description: |
+  一台古老的终端设备，键盘由某种半透明的晶体构成，屏幕则是一块不断变换色彩的光板。
+  通过它，太史录官可以检索、整理与封存 DragonWorld 的全部历史档案。
+  普通用户只能查询公开级别的事件记录。
+interactions:
+  inspect:
+    text: "档案控制台的屏幕上滚动着最近发生的事件摘要，光标在最后一行闪烁。"
+    effect: "显示最近 5 条公开事件记录"
+  query:
+    text: "你输入了查询条件，控制台发出轻微的嗡鸣，开始在浩瀚的档案中搜索。"
+    effect: "根据关键词返回匹配的历史事件"
+  seal:
+    text: "一段新的记忆被写入档案格，控制台屏幕闪过一道绿光，表示封存成功。"
+    effect: "将当前会话记忆归档（需太史录官权限）"
+status_text: "档案控制台在线，最近更新于 3 分钟前。"

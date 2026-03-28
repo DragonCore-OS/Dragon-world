@@ -1,0 +1,23 @@
+id: council_hall
+name: 议事厅
+kind: governance
+description: |
+  八角形的宏伟厅堂，地面镶嵌着代表不同治理领域的符文石板。
+  这里是 DragonWorld 的决策中枢，重大提案在此讨论、表决并转化为世界补丁。
+  玄枢守卫伫立在门口，确保议事秩序不受干扰。
+short_description: 八角决策厅堂，符文石板在地面上微微发光。
+ambient_text:
+  - 符文石板按照议题的优先级依次亮起，形成流动的光路。
+  - 空旷的厅堂中回荡着过去决议的余音，仿佛历史在此重叠。
+  - 玄枢守卫的目光扫过每一个角落，警惕着任何异常。
+exits:
+  west: archive_hall
+  north: observatory
+objects:
+  - forge_table
+agents:
+  - xuanshu_guard
+tags:
+  - governance
+  - council
+  - formal

@@ -1,0 +1,23 @@
+id: observatory
+name: 观星台
+kind: observation
+description: |
+  一座穹顶透明的圆形高塔，星图盘悬浮于房间中央，投射出 DragonWorld 之外的无尽虚空。
+  这里是观察世界边界、监测外部威胁与推演未来走向的地方。
+  夜晚时分，穹顶会显现出真实的星空，令人屏息。
+short_description: 透明穹顶高塔，星图盘映射着虚空与星辰。
+ambient_text:
+  - 星图盘上的某颗光点突然闪烁，预示着某个外部变量的扰动。
+  - 微风从穹顶的缝隙中渗入，带来遥远虚空的气息。
+  - 月光透过穹顶洒落，在地面形成复杂的几何图案。
+exits:
+  west: workshop
+  south: council_hall
+objects:
+  - star_map
+agents:
+  - huaxia_zhenlongce
+tags:
+  - observation
+  - celestial
+  - silent

@@ -1,0 +1,26 @@
+# Room Manifest 模板
+# 复制此文件并重命名为 <room_id>.yaml，然后填入具体内容。
+
+id: <room_id>
+name: <房间显示名称>
+kind: <control | archive | biological | governance | production | observation | ...>
+description: |
+  <房间的详细描述，支持多行文本。>
+  <这是玩家第一次进入房间或执行 /look 时可能看到的完整描述。>
+short_description: <房间的简短描述，一句话概括>
+ambient_text:
+  - <环境文本 1，用于营造氛围>
+  - <环境文本 2>
+  - <环境文本 3>
+exits:
+  <direction>: <目标房间 id>
+  <direction>: <目标房间 id>
+objects:
+  - <object_id_1>
+  - <object_id_2>
+agents:
+  - <agent_id_1>
+  - <agent_id_2>
+tags:
+  - <tag_1>
+  - <tag_2>

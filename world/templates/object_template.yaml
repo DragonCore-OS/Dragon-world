@@ -1,0 +1,18 @@
+# Object Manifest 模板
+# 复制此文件并重命名为 <object_id>.yaml，然后填入具体内容。
+
+id: <object_id>
+name: <物品显示名称>
+type: <core_computing | terminal | biological_vessel | workbench | holographic_projector | ...>
+room: <所属房间 id>
+description: |
+  <物品的详细描述，支持多行文本。>
+  <说明该物品的外观、功能、历史背景等。>
+interactions:
+  <interaction_name>:
+    text: <执行交互时显示的文本>
+    effect: <交互的效果描述，供内核实现参考>
+  <interaction_name>:
+    text: <执行交互时显示的文本>
+    effect: <交互的效果描述>
+status_text: <物品的当前状态文本，通常是一句话>
