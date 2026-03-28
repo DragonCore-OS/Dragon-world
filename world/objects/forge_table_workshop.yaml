@@ -1,0 +1,6 @@
+id: forge_table_workshop
+name: Forge Table
+type: workbench
+room: workshop
+interactions: [inspect, craft, repair]
+status: hot

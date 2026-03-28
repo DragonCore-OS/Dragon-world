@@ -7,11 +7,12 @@ validate_seed_world.py
 - room / agent / object id 是否重复
 - exits 是否有悬挂引用
 - agent/object 所属房间是否存在
+
+本版本与 kernel 的简化 schema 对齐。
 """
 
 import sys
 from pathlib import Path
-from collections import defaultdict
 
 try:
     import yaml
@@ -56,8 +57,7 @@ def load_yaml_files(directory: Path):
 
 def validate_rooms(rooms: dict):
     """验证房间数据。"""
-    required_fields = ["id", "name", "kind", "description", "short_description",
-                       "ambient_text", "exits", "objects", "agents", "tags"]
+    required_fields = ["id", "name", "description", "exits", "objects", "agents", "permissions"]
     for rid, data in rooms.items():
         for field in required_fields:
             if field not in data:
@@ -73,8 +73,7 @@ def validate_rooms(rooms: dict):
 def validate_agents(agents: dict, rooms: dict):
     """验证角色数据。"""
     required_fields = ["id", "name", "title", "role", "owner_room",
-                       "supervisor", "skills", "greeting", "fallback_lines",
-                       "memory_namespace", "notes"]
+                       "supervisor", "skills", "memory_namespace"]
     for aid, data in agents.items():
         for field in required_fields:
             if field not in data:
@@ -87,8 +86,7 @@ def validate_agents(agents: dict, rooms: dict):
 
 def validate_objects(objects: dict, rooms: dict):
     """验证物品数据。"""
-    required_fields = ["id", "name", "type", "room", "description",
-                       "interactions", "status_text"]
+    required_fields = ["id", "name", "type", "room", "interactions", "status"]
     for oid, data in objects.items():
         for field in required_fields:
             if field not in data:
@@ -123,7 +121,7 @@ def validate_room_agent_object_consistency(rooms: dict, agents: dict, objects: d
 
 def main():
     print("=" * 50)
-    print("DragonWorld Seed 数据验证器")
+    print("DragonWorld Seed 数据验证器 (Kernel Schema)")
     print("=" * 50)
 
     rooms = load_yaml_files(ROOMS_DIR)
@@ -145,7 +143,6 @@ def main():
         for direction, target in data.get("exits", {}).items():
             target_room = rooms.get(target)
             if target_room:
-                # 简单的反向检查：不要求严格对称，但给出警告
                 reverse_map = {"north": "south", "south": "north",
                                "east": "west", "west": "east",
                                "up": "down", "down": "up"}

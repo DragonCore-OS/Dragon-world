@@ -1,0 +1,9 @@
+[package]
+name = "snapshot"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+world-core = { path = "../world-core" }
+world-loader = { path = "../world-loader" }

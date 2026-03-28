@@ -1,0 +1,6 @@
+id: forge_table_council
+name: Seal Forge
+type: workbench
+room: council_hall
+interactions: [inspect, seal]
+status: ready

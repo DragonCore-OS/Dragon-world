@@ -1,0 +1,11 @@
+[package]
+name = "dragon-world-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+command-parser = { path = "../../crates/command-parser" }
+world-core = { path = "../../crates/world-core" }
+world-loader = { path = "../../crates/world-loader" }
+snapshot = { path = "../../crates/snapshot" }

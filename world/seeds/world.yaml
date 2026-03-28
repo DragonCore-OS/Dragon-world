@@ -1,0 +1,22 @@
+version: "phase1"
+initial_room: core_room
+rooms:
+  - core_room.yaml
+  - archive_hall.yaml
+  - nursery_room.yaml
+  - council_hall.yaml
+  - workshop.yaml
+  - observatory.yaml
+agents:
+  - huaxia_zhenlongce.yaml
+  - nuwa.yaml
+  - taishi_recorder.yaml
+  - tiangong_supervisor.yaml
+  - xuanshu_guard.yaml
+objects:
+  - matrix_brain.yaml
+  - archive_console.yaml
+  - embryo_pool.yaml
+  - forge_table_workshop.yaml
+  - forge_table_council.yaml
+  - star_map.yaml
