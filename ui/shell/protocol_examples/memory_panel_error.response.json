@@ -1,0 +1,13 @@
+{
+  "protocolVersion": "dw-memory-v1",
+  "header": "Memory Panel Error",
+  "notice": "Unknown agent.",
+  "mode": "agent_memory",
+  "sections": [],
+  "errors": [
+    {
+      "code": "UNKNOWN_AGENT",
+      "message": "Agent unknown_agent is not known."
+    }
+  ]
+}

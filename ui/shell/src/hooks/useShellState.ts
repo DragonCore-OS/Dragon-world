@@ -10,7 +10,8 @@ import type {
   WorldEvent,
 } from '@/types/world';
 import type { BridgeStatus } from '@/types/bridge';
-import { executeKernelCommand, getStatus } from '@/adapters/kernelAdapter';
+import type { KernelStatus } from '@/types/world';
+import { executeKernelCommand, getStatus, getVisibleAgents } from '@/adapters/kernelAdapter';
 import {
   sendAgentDialogue,
   getBridgeStatus,
@@ -29,6 +30,8 @@ export interface ShellState {
   logs: LogEntry[];
   events: WorldEvent[];
   bridgeStatus: BridgeStatus;
+  kernelStatus: KernelStatus | null;
+  isLoading: boolean;
 }
 
 function makeTimestamp(): string {
@@ -48,14 +51,7 @@ export function useShellState() {
     {
       id: 1,
       type: 'system',
-      text: 'DragonWorld OS Shell [Version 2.3.0-bridge-ready]',
-      timestamp: makeTimestamp(),
-    },
-    {
-      id: 2,
-      type: 'world',
-      text: WORLD_DATA['core_room'].desc,
-      title: `Enter [${WORLD_DATA['core_room'].name}]`,
+      text: 'DragonWorld OS Shell [Version 2.3.0-kernel-ready]',
       timestamp: makeTimestamp(),
     },
   ]);
@@ -63,6 +59,8 @@ export function useShellState() {
     { time: makeTimestamp(), desc: 'System boot sequence completed.' },
   ]);
   const [bridgeStatus, setBridgeStatus] = useState<BridgeStatus>(getBridgeStatus());
+  const [kernelStatus, setKernelStatus] = useState<KernelStatus | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const logEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -74,6 +72,45 @@ export function useShellState() {
   useEffect(() => {
     refreshBridgeStatus();
   }, [refreshBridgeStatus]);
+
+  // Fetch kernel status when room changes
+  useEffect(() => {
+    let mounted = true;
+    setIsLoading(true);
+    getStatus(currentRoom).then((status) => {
+      if (mounted) {
+        setKernelStatus(status);
+        setIsLoading(false);
+      }
+    }).catch(() => {
+      if (mounted) setIsLoading(false);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [currentRoom]);
+
+  // Initial room description
+  useEffect(() => {
+    let mounted = true;
+    // Use WORLD_DATA only for initial mock data if kernel not ready yet
+    const initialRoom = WORLD_DATA['core_room'];
+    if (mounted) {
+      setLogs((prev) => [
+        ...prev,
+        {
+          id: 2,
+          type: 'world',
+          text: initialRoom.desc,
+          title: `Enter [${initialRoom.name}]`,
+          timestamp: makeTimestamp(),
+        },
+      ]);
+    }
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const addLog = useCallback((type: LogEntry['type'], text: string, title?: string) => {
     setLogs((prev) => [
@@ -88,13 +125,18 @@ export function useShellState() {
 
   // Kernel Gate: validates that the agent is present in the current room
   const kernelTalkGate = useCallback(
-    (agentId: AgentId): boolean => {
-      const room = WORLD_DATA[currentRoom];
-      if (!room.agents.includes(agentId)) {
-        addLog('error', `Agent not found in this room: ${agentId}`);
+    async (agentId: AgentId): Promise<boolean> => {
+      try {
+        const agents = await getVisibleAgents(currentRoom);
+        if (!agents.some((a) => a.id === agentId)) {
+          addLog('error', `Agent not found in this room: ${agentId}`);
+          return false;
+        }
+        return true;
+      } catch (err) {
+        addLog('error', `Failed to check agents: ${err}`);
         return false;
       }
-      return true;
     },
     [currentRoom, addLog]
   );
@@ -140,18 +182,18 @@ export function useShellState() {
           addLog('error', 'Syntax error: /talk <agent_id>');
           return;
         }
-        if (!kernelTalkGate(targetAgent)) {
+        if (!(await kernelTalkGate(targetAgent))) {
           return;
         }
         setMode('talk');
         setTalkAgent(targetAgent);
         setRightTab('memory');
-        // Initial stub greeting (kernel-backed), then bridge can take over for follow-ups
-        addLog('ai', `Hello, I am ${WORLD_DATA[currentRoom].agents.includes(targetAgent) ? targetAgent : 'Agent'}. How can I help?`, targetAgent);
+        // Initial stub greeting
+        addLog('ai', `Hello, I am ${targetAgent}. How can I help?`, targetAgent);
         return;
       }
 
-      const result = executeKernelCommand(currentRoom, trimmed);
+      const result = await executeKernelCommand(currentRoom, trimmed);
 
       if (result.type === 'move' && result.newRoom) {
         setCurrentRoom(result.newRoom);
@@ -195,7 +237,14 @@ export function useShellState() {
     [input, processCommand]
   );
 
-  const status = getStatus(currentRoom);
+  // Use kernelStatus if available, fallback to defaults
+  const status: KernelStatus = kernelStatus ?? {
+    currentRoom,
+    totalRooms: 6,
+    totalAgents: 5,
+    totalObjects: 6,
+    exits: [],
+  };
 
   return {
     state: {
@@ -210,6 +259,8 @@ export function useShellState() {
       logs,
       events,
       bridgeStatus,
+      kernelStatus,
+      isLoading,
     },
     actions: {
       setCurrentRoom,

@@ -11,6 +11,9 @@ import type {
   BridgeWorldContext,
   BridgeVisibleAgent,
   BridgeVisibleObject,
+  BridgeMemoryPanelRequest,
+  BridgeMemoryPanelResponse,
+  MemoryPanelMode,
 } from '@/types/bridge';
 import { AGENTS, WORLD_DATA } from '@/data/kernelMockData';
 
@@ -18,7 +21,7 @@ const BRIDGE_MODE: BridgeMode =
   (import.meta.env.VITE_BRIDGE_MODE as BridgeMode) || 'mock';
 
 const BRIDGE_BASE_URL =
-  (import.meta.env.VITE_BRIDGE_BASE_URL as string) || 'http://localhost:3001';
+  (import.meta.env.VITE_BRIDGE_BASE_URL as string) || 'http://localhost:3002';
 
 let lastLatencyMs: number | null = null;
 let lastError: string | null = null;
@@ -205,35 +208,127 @@ export async function sendAgentDialogue(
   return sendBridgeRequest(req);
 }
 
-export async function requestMemoryPanel(
-  _roomId: RoomId,
+function buildMemoryPanelRequest(
+  roomId: RoomId,
   agentId?: AgentId
-): Promise<{
-  header: string;
-  notice: string;
-  sampleTitle: string;
-  sampleText: string;
-  tags: string[];
-}> {
-  if (BRIDGE_MODE === 'disabled') {
+): BridgeMemoryPanelRequest {
+  const mode: MemoryPanelMode = agentId ? 'agent_memory' : 'room_memory';
+  return {
+    protocolVersion: 'dw-memory-v1',
+    threadId: 'thread-001',
+    sessionId: 'session-001',
+    roomId,
+    agentId,
+    mode,
+  };
+}
+
+async function sendRemoteMemoryPanelRequest(
+  req: BridgeMemoryPanelRequest
+): Promise<BridgeMemoryPanelResponse> {
+  const start = nowMs();
+  try {
+    const res = await fetch(`${BRIDGE_BASE_URL}/v1/memory/panel`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Request-ID': req.sessionId,
+      },
+      body: JSON.stringify(req),
+    });
+    lastLatencyMs = Math.round(nowMs() - start);
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => 'Unknown error');
+      throw new Error(`HTTP ${res.status}: ${text}`);
+    }
+
+    const data = (await res.json()) as BridgeMemoryPanelResponse;
+    connected = true;
+    lastError = null;
+    return data;
+  } catch (err) {
+    lastLatencyMs = Math.round(nowMs() - start);
+    connected = false;
+    const msg = err instanceof Error ? err.message : String(err);
+    lastError = msg;
     return {
-      header: agentId ? `${agentId} View (Bridge)` : 'Secretary View (Bridge)',
-      notice: 'Bridge is disabled. Memory panel cannot be loaded.',
-      sampleTitle: 'No Data',
-      sampleText: 'Bridge mode is set to disabled.',
-      tags: ['bridge_disabled'],
+      protocolVersion: 'dw-memory-v1',
+      header: 'Memory Panel Error',
+      notice: `Remote request failed: ${msg}`,
+      mode: req.mode,
+      sections: [],
+      errors: [{ code: 'REMOTE_UNAVAILABLE', message: msg }],
     };
   }
+}
 
-  // In remote/mock mode, we still return mock UI data for the memory panel
-  // because the DeerFlow contract for memory panel is not yet fully implemented.
+async function sendMockMemoryPanelRequest(
+  _req: BridgeMemoryPanelRequest
+): Promise<BridgeMemoryPanelResponse> {
+  const start = nowMs();
   await new Promise((res) => setTimeout(res, 150));
+  lastLatencyMs = Math.round(nowMs() - start);
+  connected = false;
+  lastError = null;
+
   return {
-    header: agentId ? `${agentId} View (Bridge)` : 'Secretary View (Bridge)',
+    protocolVersion: 'dw-memory-v1',
+    header: 'Secretary View (Bridge)',
     notice: 'This panel depends on AI Bridge generation. Currently showing default mock.',
-    sampleTitle: 'Matrix Brain Status Record',
-    sampleText:
-      '"In the last 10 ticks, the pulse frequency of the Matrix Brain in the Archive Hall rose by 0.4%."',
-    tags: ['matrix_brain', 'archive_hall'],
+    mode: _req.mode,
+    sections: [
+      {
+        id: 'mock-section',
+        title: 'Matrix Brain Status Record',
+        notes: [
+          {
+            id: 'mock-note-001',
+            title: 'Matrix Brain Status Record',
+            text: '"In the last 10 ticks, the pulse frequency of the Matrix Brain in the Archive Hall rose by 0.4%."',
+            importance: 'medium',
+            tags: [
+              { label: 'matrix_brain', kind: 'object' },
+              { label: 'archive_hall', kind: 'room' },
+            ],
+            source: { type: 'bridge_stub' },
+          },
+        ],
+      },
+    ],
+    errors: [],
   };
+}
+
+function sendDisabledMemoryPanelRequest(
+  agentId?: AgentId
+): BridgeMemoryPanelResponse {
+  lastLatencyMs = null;
+  connected = false;
+  lastError = 'Bridge is disabled';
+  return {
+    protocolVersion: 'dw-memory-v1',
+    header: agentId ? `${agentId} View (Bridge)` : 'Secretary View (Bridge)',
+    notice: 'Bridge is disabled. Memory panel cannot be loaded.',
+    mode: 'agent_memory',
+    sections: [],
+    errors: [{ code: 'BRIDGE_DISABLED', message: 'Bridge mode is set to disabled.' }],
+  };
+}
+
+export async function requestMemoryPanel(
+  roomId: RoomId,
+  agentId?: AgentId
+): Promise<BridgeMemoryPanelResponse> {
+  const req = buildMemoryPanelRequest(roomId, agentId);
+
+  if (BRIDGE_MODE === 'disabled') {
+    return sendDisabledMemoryPanelRequest(agentId);
+  }
+
+  if (BRIDGE_MODE === 'remote') {
+    return sendRemoteMemoryPanelRequest(req);
+  }
+
+  return sendMockMemoryPanelRequest(req);
 }

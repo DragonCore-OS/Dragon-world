@@ -1,0 +1,16 @@
+[package]
+name = "server"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tower-http = { version = "0.5", features = ["cors"] }
+world-core = { path = "../../crates/world-core" }
+world-loader = { path = "../../crates/world-loader" }
+command-parser = { path = "../../crates/command-parser" }

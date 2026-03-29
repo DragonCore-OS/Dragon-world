@@ -120,6 +120,52 @@ export interface BridgeStatus {
   lastError: string | null;
 }
 
+// Memory Panel types (dw-memory-v1)
+export type MemoryPanelMode = 'room_memory' | 'agent_memory' | 'world_memory';
+
+export interface MemoryPanelTag {
+  label: string;
+  kind: 'agent' | 'object' | 'room' | 'memory' | 'governance';
+}
+
+export interface MemoryPanelSource {
+  type: 'bridge_stub' | 'deerflow' | 'ledger' | 'agent_notebook';
+  ref?: string;
+}
+
+export interface MemoryPanelNote {
+  id: string;
+  title: string;
+  text: string;
+  importance: 'low' | 'medium' | 'high';
+  tags: MemoryPanelTag[];
+  source: MemoryPanelSource;
+}
+
+export interface MemoryPanelSection {
+  id: string;
+  title: string;
+  notes: MemoryPanelNote[];
+}
+
+export interface BridgeMemoryPanelRequest {
+  protocolVersion: 'dw-memory-v1';
+  threadId: string;
+  sessionId: string;
+  roomId: RoomId;
+  agentId?: AgentId;
+  mode: MemoryPanelMode;
+}
+
+export interface BridgeMemoryPanelResponse {
+  protocolVersion: 'dw-memory-v1';
+  header: string;
+  notice?: string;
+  mode: MemoryPanelMode;
+  sections: MemoryPanelSection[];
+  errors: Array<{ code: string; message: string }>;
+}
+
 // Proposal display types (mock-only, read-only)
 export type ProposalStatus = 'pending' | 'approved' | 'rejected' | 'archived';
 

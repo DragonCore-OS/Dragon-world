@@ -1,8 +1,8 @@
+import { useState, useEffect } from 'react';
 import { Box, Cpu } from 'lucide-react';
 import { getAnnotationClasses } from '@/data/truthLayers';
-import { WORLD_DATA } from '@/data/kernelMockData';
-import { getMapGraph } from '@/adapters/kernelAdapter';
-import type { RoomId } from '@/types/world';
+import { getMapGraph, getCurrentRoom } from '@/adapters/kernelAdapter';
+import type { RoomId, RoomData } from '@/types/world';
 import type { ThemeSpec } from '@/types/ui';
 
 interface Props {
@@ -13,8 +13,38 @@ interface Props {
 }
 
 export function MapPanel({ currentRoom, theme, showAnnotations, onNavigate }: Props) {
-  const { nodes, edges } = getMapGraph();
+  const [graph, setGraph] = useState<{ nodes: Record<RoomId, { x: number; y: number }>; edges: Array<{ from: RoomId; to: RoomId; dashed?: boolean }> } | null>(null);
+  const [roomData, setRoomData] = useState<RoomData | null>(null);
+  const [loading, setLoading] = useState(true);
   const annotation = getAnnotationClasses('kernel', showAnnotations);
+
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    Promise.all([getMapGraph(), getCurrentRoom(currentRoom)]).then(([g, r]) => {
+      if (mounted) {
+        setGraph(g);
+        setRoomData(r);
+        setLoading(false);
+      }
+    }).catch(() => {
+      if (mounted) setLoading(false);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [currentRoom]);
+
+  if (loading || !graph || !roomData) {
+    return (
+      <div className={`h-full flex items-center justify-center text-xs text-gray-500 ${annotation}`}>
+        Loading map...
+      </div>
+    );
+  }
+
+  const { nodes, edges } = graph;
+  const currentExits = roomData.exits;
 
   return (
     <div
@@ -39,8 +69,8 @@ export function MapPanel({ currentRoom, theme, showAnnotations, onNavigate }: Pr
       {Object.entries(nodes).map(([id, pos]: [string, { x: number; y: number }]) => {
         const roomId = id as RoomId;
         const isCurrent = currentRoom === roomId;
-        const exitDir = (Object.keys(WORLD_DATA[currentRoom].exits) as Array<keyof typeof WORLD_DATA[typeof currentRoom]['exits']>).find(
-          (k) => WORLD_DATA[currentRoom].exits[k] === roomId
+        const exitDir = (Object.keys(currentExits) as Array<keyof typeof currentExits>).find(
+          (k) => currentExits[k] === roomId
         );
         const isAdjacent = !!exitDir;
 

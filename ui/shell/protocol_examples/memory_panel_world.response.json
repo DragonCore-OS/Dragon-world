@@ -1,0 +1,53 @@
+{
+  "protocolVersion": "dw-memory-v1",
+  "header": "World Memory (Bridge)",
+  "notice": "Showing world-level memory from bridge stub.",
+  "mode": "world_memory",
+  "sections": [
+    {
+      "id": "world_summary",
+      "title": "World Summary",
+      "notes": [
+        {
+          "id": "note-006",
+          "title": "Seed World Status",
+          "text": "DragonWorld seed world contains 6 rooms, 5 agents, and 6 objects. All kernel tests pass.",
+          "importance": "high",
+          "tags": [
+            { "label": "core_room", "kind": "room" },
+            { "label": "memory", "kind": "memory" }
+          ],
+          "source": { "type": "ledger", "ref": "seed-world-v1" }
+        }
+      ]
+    },
+    {
+      "id": "governance_timeline",
+      "title": "Governance Timeline",
+      "notes": [
+        {
+          "id": "note-007",
+          "title": "Bridge Freeze",
+          "text": "The DeerFlow bridge interface was frozen on 2025-03-29. No runtime may directly mutate world state.",
+          "importance": "high",
+          "tags": [
+            { "label": "governance", "kind": "governance" },
+            { "label": "memory", "kind": "memory" }
+          ],
+          "source": { "type": "ledger", "ref": "bridge-freeze" }
+        },
+        {
+          "id": "note-008",
+          "title": "Pending Proposals",
+          "text": "There are 0 approved patch proposals and 0 rejected proposals in the current stub cycle.",
+          "importance": "low",
+          "tags": [
+            { "label": "governance", "kind": "governance" }
+          ],
+          "source": { "type": "bridge_stub", "ref": "proposal-count" }
+        }
+      ]
+    }
+  ],
+  "errors": []
+}
