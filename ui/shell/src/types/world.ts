@@ -65,3 +65,11 @@ export type LeftTab = 'room' | 'map';
 export type RightTab = 'status' | 'memory' | 'forge' | 'events';
 export type ThemeKey = 'neo' | 'living' | 'civ';
 export type TruthLayer = 'kernel' | 'bridge' | 'mock';
+
+export interface KernelStatus {
+  currentRoom: RoomId;
+  totalRooms: number;
+  totalAgents: number;
+  totalObjects: number;
+  exits: string[];
+}

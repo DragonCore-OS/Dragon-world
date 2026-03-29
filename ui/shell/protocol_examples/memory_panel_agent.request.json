@@ -1,0 +1,8 @@
+{
+  "protocolVersion": "dw-memory-v1",
+  "threadId": "thread-001",
+  "sessionId": "session-001",
+  "roomId": "core_room",
+  "agentId": "huaxia_zhenlongce",
+  "mode": "agent_memory"
+}

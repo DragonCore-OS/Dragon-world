@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Box, Cpu, MessageSquare } from 'lucide-react';
 import { getAnnotationClasses } from '@/data/truthLayers';
 import type { RoomId, AgentId, ShellMode } from '@/types/world';
@@ -14,9 +15,21 @@ interface Props {
 }
 
 export function VisualArea({ roomId, mode, talkAgent, theme, showAnnotations }: Props) {
-  const room = getCurrentRoom(roomId);
+  const [room, setRoom] = useState<{ id: string; name: string; objects: string[] } | null>(null);
   const kernelAnnotation = getAnnotationClasses('kernel', showAnnotations);
   const bridgeAnnotation = getAnnotationClasses('bridge', showAnnotations);
+
+  useEffect(() => {
+    let mounted = true;
+    getCurrentRoom(roomId).then((r) => {
+      if (mounted) setRoom(r);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [roomId]);
+
+  const hasMatrixBrain = room?.objects?.includes('matrix_brain') ?? false;
 
   return (
     <div className="h-1/3 border-b border-gray-900 relative overflow-hidden flex items-center justify-center">
@@ -35,7 +48,7 @@ export function VisualArea({ roomId, mode, talkAgent, theme, showAnnotations }: 
               {UI_LABELS.logPanel.bridgeDialogueActive}
             </div>
           </div>
-        ) : room.objects.includes('matrix_brain') ? (
+        ) : hasMatrixBrain ? (
           <div className="relative z-10">
             <div
               className={`absolute inset-0 rounded-full opacity-20 blur-2xl animate-pulse ${theme.bgAccent} transition-colors duration-700`}
@@ -57,9 +70,9 @@ export function VisualArea({ roomId, mode, talkAgent, theme, showAnnotations }: 
         ) : (
           <div className="relative z-10 flex flex-col items-center opacity-40">
             <Box size={32} className="text-gray-600" />
-            <div className="mt-4 text-gray-500 tracking-widest text-xs uppercase">{room.id}</div>
+            <div className="mt-4 text-gray-500 tracking-widest text-xs uppercase">{room?.id ?? roomId}</div>
             <div className="text-[9px] text-gray-600 mt-1">
-              Objects: {room.objects.length} | Agents: {room.agents.length}
+              Objects: {room?.objects?.length ?? 0} | Agents: loading...
             </div>
           </div>
         )}
@@ -67,7 +80,7 @@ export function VisualArea({ roomId, mode, talkAgent, theme, showAnnotations }: 
 
       <div className="absolute top-4 right-4 flex flex-col items-end text-[10px] font-mono z-20">
         <div className={theme.text}>{UI_LABELS.logPanel.hudOnline}</div>
-        <div className="text-gray-500">{UI_LABELS.logPanel.hudLoc(room.id)}</div>
+        <div className="text-gray-500">{UI_LABELS.logPanel.hudLoc(room?.id ?? roomId)}</div>
       </div>
     </div>
   );

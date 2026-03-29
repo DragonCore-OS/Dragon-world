@@ -1,0 +1,37 @@
+{
+  "protocolVersion": "dw-memory-v1",
+  "header": "Room Memory (Bridge)",
+  "notice": "Showing room memory from bridge stub.",
+  "mode": "room_memory",
+  "sections": [
+    {
+      "id": "room_artifacts",
+      "title": "Room Artifacts",
+      "notes": [
+        {
+          "id": "note-004",
+          "title": "Matrix Brain Log",
+          "text": "The Matrix Brain pulse frequency in the Archive Hall has been stable for the last 10 ticks.",
+          "importance": "high",
+          "tags": [
+            { "label": "matrix_brain", "kind": "object" },
+            { "label": "archive_hall", "kind": "room" }
+          ],
+          "source": { "type": "bridge_stub", "ref": "room-scan" }
+        },
+        {
+          "id": "note-005",
+          "title": "Archive Console Entry",
+          "text": "Archive console shows 3 recent governance proposals in pending review.",
+          "importance": "medium",
+          "tags": [
+            { "label": "archive_console", "kind": "object" },
+            { "label": "archive_hall", "kind": "room" }
+          ],
+          "source": { "type": "bridge_stub", "ref": "room-scan" }
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

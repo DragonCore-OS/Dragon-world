@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   Compass,
   ArrowUp,
@@ -11,8 +12,8 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { getAnnotationClasses } from '@/data/truthLayers';
-import { getCurrentRoom, getAgentData } from '@/adapters/kernelAdapter';
-import type { RoomId } from '@/types/world';
+import { getCurrentRoom, getVisibleAgents } from '@/adapters/kernelAdapter';
+import type { RoomId, RoomData, AgentData } from '@/types/world';
 import type { ThemeSpec } from '@/types/ui';
 import { UI_LABELS } from '@/data/localizedDisplayCopy';
 
@@ -26,11 +27,30 @@ interface Props {
 }
 
 export function RoomPanel({ roomId, theme, showAnnotations, onTalk, onInspect, onNavigate }: Props) {
-  const room = getCurrentRoom(roomId);
+  const [room, setRoom] = useState<RoomData | null>(null);
+  const [agents, setAgents] = useState<AgentData[]>([]);
+  const [loading, setLoading] = useState(true);
   const annotation = getAnnotationClasses('kernel', showAnnotations);
 
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    Promise.all([getCurrentRoom(roomId), getVisibleAgents(roomId)]).then(([r, a]) => {
+      if (mounted) {
+        setRoom(r);
+        setAgents(a);
+        setLoading(false);
+      }
+    }).catch(() => {
+      if (mounted) setLoading(false);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [roomId]);
+
   const dirBtn = (dir: 'north' | 'south' | 'east' | 'west', icon: React.ReactNode) => {
-    const enabled = !!room.exits[dir];
+    const enabled = !!room?.exits?.[dir];
     return (
       <button
         onClick={() => onNavigate(dir)}
@@ -45,6 +65,14 @@ export function RoomPanel({ roomId, theme, showAnnotations, onTalk, onInspect, o
       </button>
     );
   };
+
+  if (loading || !room) {
+    return (
+      <div className={`space-y-6 ${annotation}`}>
+        <div className="text-xs text-gray-500">Loading room data...</div>
+      </div>
+    );
+  }
 
   return (
     <div className={`space-y-6 ${annotation}`}>
@@ -75,33 +103,30 @@ export function RoomPanel({ roomId, theme, showAnnotations, onTalk, onInspect, o
       {/* Agents */}
       <div>
         <div className="text-[10px] text-gray-500 uppercase mb-2 flex items-center gap-1">
-          <Users size={12} /> {UI_LABELS.roomPanel.agentsInRoom(room.agents.length)}
+          <Users size={12} /> {UI_LABELS.roomPanel.agentsInRoom(agents.length)}
         </div>
-        {room.agents.length === 0 ? (
+        {agents.length === 0 ? (
           <div className="text-xs text-gray-600 flex items-center justify-center p-3 border border-gray-800 border-dashed rounded bg-black/50">
             {UI_LABELS.roomPanel.noAgents}
           </div>
         ) : (
-          room.agents.map((agentId) => {
-            const agent = getAgentData(agentId);
-            return (
-              <div
-                key={agentId}
-                onClick={() => onTalk(agentId)}
-                className="mb-2 p-2 border border-gray-800 rounded bg-gray-900/30 flex items-start gap-3 cursor-pointer hover:border-purple-500/50 transition-colors group"
-              >
-                <div className={`mt-1 ${agent.color}`}>
-                  <MessageSquare size={14} />
-                </div>
-                <div>
-                  <div className="text-sm font-bold text-gray-200 group-hover:text-purple-300 transition-colors">
-                    {agentId}
-                  </div>
-                  <div className="text-[10px] text-gray-500 mt-1">{agent.role}</div>
-                </div>
+          agents.map((agent) => (
+            <div
+              key={agent.id}
+              onClick={() => onTalk(agent.id)}
+              className="mb-2 p-2 border border-gray-800 rounded bg-gray-900/30 flex items-start gap-3 cursor-pointer hover:border-purple-500/50 transition-colors group"
+            >
+              <div className={`mt-1 ${agent.color}`}>
+                <MessageSquare size={14} />
               </div>
-            );
-          })
+              <div>
+                <div className="text-sm font-bold text-gray-200 group-hover:text-purple-300 transition-colors">
+                  {agent.id}
+                </div>
+                <div className="text-[10px] text-gray-500 mt-1">{agent.role}</div>
+              </div>
+            </div>
+          ))
         )}
       </div>
 

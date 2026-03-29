@@ -1,6 +1,7 @@
 [workspace]
 members = [
   "apps/cli",
+  "apps/server",
   "crates/world-core",
   "crates/world-loader",
   "crates/command-parser",
