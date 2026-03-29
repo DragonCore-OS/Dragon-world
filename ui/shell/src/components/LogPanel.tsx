@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, Wifi } from 'lucide-react';
 import { getAnnotationClasses } from '@/data/truthLayers';
 import type { LogEntry } from '@/types/world';
 import type { ThemeSpec } from '@/types/ui';
@@ -70,6 +70,23 @@ export function LogPanel({ logs, theme, showAnnotations }: Props) {
                     {log.title || 'Agent'}
                   </div>
                   <div className="text-gray-300 italic">&quot;{log.text}&quot;</div>
+                </div>
+              </div>
+            );
+          }
+
+          if (log.type === 'bridge') {
+            const annotation = getAnnotationClasses('bridge', showAnnotations);
+            return (
+              <div key={log.id} className={`my-3 flex gap-3 ${annotation}`}>
+                <div className="w-8 h-8 rounded bg-blue-900/50 flex items-center justify-center border border-blue-500/30 shrink-0">
+                  <Wifi size={14} className="text-blue-400" />
+                </div>
+                <div className="flex-1 bg-blue-950/10 border border-blue-500/20 rounded p-3">
+                  <div className="text-xs text-blue-400 mb-1 font-bold">
+                    {log.title || 'Bridge'}
+                  </div>
+                  <div className="text-gray-300">{log.text}</div>
                 </div>
               </div>
             );

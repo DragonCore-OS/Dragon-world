@@ -2,15 +2,16 @@ import { FileEdit } from 'lucide-react';
 import { getAnnotationClasses } from '@/data/truthLayers';
 import { requestMemoryPanel } from '@/adapters/bridgeAdapter';
 import { useEffect, useState } from 'react';
-import type { AgentId } from '@/types/world';
+import type { AgentId, RoomId } from '@/types/world';
 import { UI_LABELS } from '@/data/localizedDisplayCopy';
 
 interface Props {
   showAnnotations: boolean;
   agentId?: AgentId | null;
+  roomId: RoomId;
 }
 
-export function MemoryPanel({ showAnnotations, agentId }: Props) {
+export function MemoryPanel({ showAnnotations, agentId, roomId }: Props) {
   const annotation = getAnnotationClasses('bridge', showAnnotations);
   const [data, setData] = useState<{
     header: string;
@@ -22,13 +23,13 @@ export function MemoryPanel({ showAnnotations, agentId }: Props) {
 
   useEffect(() => {
     let mounted = true;
-    requestMemoryPanel(agentId ?? undefined).then((res) => {
+    requestMemoryPanel(roomId, agentId ?? undefined).then((res) => {
       if (mounted) setData(res);
     });
     return () => {
       mounted = false;
     };
-  }, [agentId]);
+  }, [roomId, agentId]);
 
   return (
     <div className={`space-y-4 ${annotation}`}>

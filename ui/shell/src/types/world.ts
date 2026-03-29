@@ -45,7 +45,7 @@ export interface ObjectData {
   desc: string;
 }
 
-export type LogType = 'command' | 'system' | 'error' | 'world' | 'ai';
+export type LogType = 'command' | 'system' | 'error' | 'world' | 'ai' | 'bridge';
 
 export interface LogEntry {
   id: number;

@@ -1,0 +1,39 @@
+{
+  "_comment": "dw-bridge-v1 forge_proposal response. The frontend will render these proposals in the ForgePanel (mock-only, read-only until governance approves).",
+  "protocolVersion": "dw-bridge-v1",
+  "responseType": "forge_proposal",
+  "reply": {
+    "text": "我已为您拟定新增高级培育房的提案，请提交治理层审批。",
+    "style": "plain_text"
+  },
+  "memoryUpdates": [
+    {
+      "scope": "agent_notebook",
+      "owner": "huaxia_zhenlongce",
+      "summary": "用户请求在 core_room 南方新增高级培育房。",
+      "importance": "high"
+    }
+  ],
+  "patchProposals": [
+    {
+      "proposalId": "patch-20250329-001",
+      "kind": "create_room",
+      "summary": "在 core_room 南方新增高级培育房",
+      "manifestStub": {
+        "room_id": "advanced_nursery",
+        "parent_room": "core_room",
+        "direction": "south",
+        "name": "高级培育房",
+        "description": "配备强化胚胎池的进阶培育设施。"
+      },
+      "requiredGovernance": true,
+      "reasoning": "用户主动要求扩展基础设施。"
+    }
+  ],
+  "toolTraceSummary": [
+    "room layout analysis",
+    "governance requirement check",
+    "world patch proposed"
+  ],
+  "errors": []
+}

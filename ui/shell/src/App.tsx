@@ -77,6 +77,7 @@ function App() {
           theme={theme}
           themeKey={state.theme}
           showAnnotations={state.showAnnotations}
+          bridgeStatus={state.bridgeStatus}
           onToggleAnnotations={() => actions.setShowAnnotations(!state.showAnnotations)}
           onChangeTheme={(k: ThemeKey) => actions.setTheme(k)}
         />
@@ -136,10 +137,15 @@ function App() {
                 totalAgents={computed.status.totalAgents}
                 theme={theme}
                 showAnnotations={state.showAnnotations}
+                bridgeStatus={state.bridgeStatus}
               />
             )}
             {state.rightTab === 'memory' && (
-              <MemoryPanel showAnnotations={state.showAnnotations} agentId={state.talkAgent} />
+              <MemoryPanel
+                showAnnotations={state.showAnnotations}
+                agentId={state.talkAgent}
+                roomId={state.currentRoom}
+              />
             )}
             {state.rightTab === 'forge' && <ForgePanel showAnnotations={state.showAnnotations} />}
             {state.rightTab === 'events' && (

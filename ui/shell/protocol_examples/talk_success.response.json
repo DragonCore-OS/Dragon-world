@@ -1,0 +1,22 @@
+{
+  "_comment": "dw-bridge-v1 successful agent_reply response. Required fields: protocolVersion, responseType, reply, memoryUpdates, patchProposals, toolTraceSummary, errors.",
+  "protocolVersion": "dw-bridge-v1",
+  "responseType": "agent_reply",
+  "reply": {
+    "text": "已为您整理最近三次世界改动：新增档案大厅与太史录官；将 forge_table 拆分为议事厅与工坊两个实体；冻结 Phase 2 bridge 接口契约。",
+    "style": "plain_text"
+  },
+  "memoryUpdates": [
+    {
+      "scope": "agent_notebook",
+      "owner": "huaxia_zhenlongce",
+      "summary": "用户要求回顾最近三次世界改动。",
+      "importance": "medium"
+    }
+  ],
+  "patchProposals": [],
+  "toolTraceSummary": [
+    "memory lookup requested"
+  ],
+  "errors": []
+}

@@ -1,0 +1,18 @@
+{
+  "_comment": "dw-bridge-v1 runtime_error response when the remote DeerFlow endpoint is unreachable or overloaded.",
+  "protocolVersion": "dw-bridge-v1",
+  "responseType": "runtime_error",
+  "reply": {
+    "text": "",
+    "style": "plain_text"
+  },
+  "memoryUpdates": [],
+  "patchProposals": [],
+  "toolTraceSummary": [],
+  "errors": [
+    {
+      "code": "REMOTE_UNAVAILABLE",
+      "message": "HTTP 503: deer-flow inference queue is at capacity, please retry in 30 seconds"
+    }
+  ]
+}

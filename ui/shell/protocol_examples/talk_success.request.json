@@ -1,0 +1,45 @@
+{
+  "_comment": "dw-bridge-v1 request for agent_dialogue. Required fields: protocolVersion, threadId, sessionId, player, world, interaction.",
+  "protocolVersion": "dw-bridge-v1",
+  "threadId": "thread-001",
+  "sessionId": "session-001",
+  "player": {
+    "id": "creator",
+    "displayName": "Creator"
+  },
+  "world": {
+    "version": "0.1.0",
+    "currentRoom": {
+      "id": "core_room",
+      "name": "Core Room",
+      "description": "The deterministic heart of DragonWorld where bootstrap records are maintained."
+    },
+    "visibleExits": ["south", "east"],
+    "visibleAgents": [
+      {
+        "id": "huaxia_zhenlongce",
+        "name": "华夏真龙策",
+        "title": "世界书记",
+        "role": "secretary"
+      }
+    ],
+    "visibleObjects": []
+  },
+  "interaction": {
+    "mode": "agent_dialogue",
+    "targetAgentId": "huaxia_zhenlongce",
+    "userMessage": "整理最近三次世界改动的摘要"
+  },
+  "memoryHints": {
+    "enabled": true,
+    "topNotes": [
+      "User is building DragonWorld.",
+      "Bridge v1 is active."
+    ]
+  },
+  "policy": {
+    "allowWorldPatchProposal": true,
+    "allowDirectWorldMutation": false,
+    "allowFileGeneration": false
+  }
+}

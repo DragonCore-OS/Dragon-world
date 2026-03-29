@@ -1,0 +1,20 @@
+{
+  "_comment": "dw-bridge-v1 failure response when target agent is not visible or bridge is unavailable.",
+  "protocolVersion": "dw-bridge-v1",
+  "responseType": "runtime_error",
+  "reply": {
+    "text": "",
+    "style": "plain_text"
+  },
+  "memoryUpdates": [],
+  "patchProposals": [],
+  "toolTraceSummary": [
+    "agent visibility check failed"
+  ],
+  "errors": [
+    {
+      "code": "AGENT_NOT_VISIBLE",
+      "message": "target_agent_id 'nuwa' is not in current_room 'core_room'"
+    }
+  ]
+}

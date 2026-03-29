@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import type {
   RoomId,
   AgentId,
@@ -9,8 +9,12 @@ import type {
   LogEntry,
   WorldEvent,
 } from '@/types/world';
+import type { BridgeStatus } from '@/types/bridge';
 import { executeKernelCommand, getStatus } from '@/adapters/kernelAdapter';
-import { sendAgentDialogue } from '@/adapters/bridgeAdapter';
+import {
+  sendAgentDialogue,
+  getBridgeStatus,
+} from '@/adapters/bridgeAdapter';
 import { WORLD_DATA } from '@/data/kernelMockData';
 
 export interface ShellState {
@@ -24,6 +28,7 @@ export interface ShellState {
   showAnnotations: boolean;
   logs: LogEntry[];
   events: WorldEvent[];
+  bridgeStatus: BridgeStatus;
 }
 
 function makeTimestamp(): string {
@@ -43,7 +48,7 @@ export function useShellState() {
     {
       id: 1,
       type: 'system',
-      text: 'DragonWorld OS Shell [Version 2.2.0-kernel-truth]',
+      text: 'DragonWorld OS Shell [Version 2.3.0-bridge-ready]',
       timestamp: makeTimestamp(),
     },
     {
@@ -57,8 +62,18 @@ export function useShellState() {
   const [events, setEvents] = useState<WorldEvent[]>([
     { time: makeTimestamp(), desc: 'System boot sequence completed.' },
   ]);
+  const [bridgeStatus, setBridgeStatus] = useState<BridgeStatus>(getBridgeStatus());
 
   const logEndRef = useRef<HTMLDivElement | null>(null);
+
+  // Poll bridge status lightly on mount and after commands
+  const refreshBridgeStatus = useCallback(() => {
+    setBridgeStatus(getBridgeStatus());
+  }, []);
+
+  useEffect(() => {
+    refreshBridgeStatus();
+  }, [refreshBridgeStatus]);
 
   const addLog = useCallback((type: LogEntry['type'], text: string, title?: string) => {
     setLogs((prev) => [
@@ -71,6 +86,36 @@ export function useShellState() {
     setEvents((prev) => [{ time: makeTimestamp(), desc }, ...prev]);
   }, []);
 
+  // Kernel Gate: validates that the agent is present in the current room
+  const kernelTalkGate = useCallback(
+    (agentId: AgentId): boolean => {
+      const room = WORLD_DATA[currentRoom];
+      if (!room.agents.includes(agentId)) {
+        addLog('error', `Agent not found in this room: ${agentId}`);
+        return false;
+      }
+      return true;
+    },
+    [currentRoom, addLog]
+  );
+
+  // Bridge Stage: sends dialogue through bridge adapter
+  const bridgeTalkStage = useCallback(
+    async (agentId: AgentId, message: string) => {
+      const res = await sendAgentDialogue(currentRoom, agentId, message);
+      refreshBridgeStatus();
+
+      if (res.responseType === 'runtime_error' || res.errors.length > 0) {
+        const errMsg = res.errors.map((e) => `[${e.code}] ${e.message}`).join('; ');
+        addLog('bridge', errMsg || 'Bridge runtime error', 'Bridge Error');
+        return;
+      }
+
+      addLog('ai', res.reply.text, agentId);
+    },
+    [currentRoom, addLog, refreshBridgeStatus]
+  );
+
   const processCommand = useCallback(
     async (cmd: string) => {
       const trimmed = cmd.trim();
@@ -78,14 +123,31 @@ export function useShellState() {
 
       addLog('command', trimmed);
 
-      // If in talk mode and not a kernel command, treat as bridge message
       const head = trimmed.toLowerCase().split(/\s+/)[0];
       const isKernelCommand =
         head.startsWith('/') || head === 'exit' || head === 'quit';
 
+      // Bridge free-text messages in talk mode
       if (mode === 'talk' && talkAgent && !isKernelCommand) {
-        const bridgeRes = await sendAgentDialogue(talkAgent, trimmed);
-        addLog('ai', bridgeRes.reply.text, talkAgent);
+        await bridgeTalkStage(talkAgent, trimmed);
+        return;
+      }
+
+      // Kernel gate for /talk
+      if (head === '/talk') {
+        const targetAgent = trimmed.substring(5).trim() as AgentId;
+        if (!targetAgent) {
+          addLog('error', 'Syntax error: /talk <agent_id>');
+          return;
+        }
+        if (!kernelTalkGate(targetAgent)) {
+          return;
+        }
+        setMode('talk');
+        setTalkAgent(targetAgent);
+        setRightTab('memory');
+        // Initial stub greeting (kernel-backed), then bridge can take over for follow-ups
+        addLog('ai', `Hello, I am ${WORLD_DATA[currentRoom].agents.includes(targetAgent) ? targetAgent : 'Agent'}. How can I help?`, targetAgent);
         return;
       }
 
@@ -97,14 +159,6 @@ export function useShellState() {
         setTalkAgent(null);
         addLog('world', result.message, result.title);
         addEvent(`Moved to ${result.newRoom}`);
-        return;
-      }
-
-      if (result.type === 'talk' && result.targetAgent) {
-        setMode('talk');
-        setTalkAgent(result.targetAgent);
-        setRightTab('memory');
-        addLog('ai', result.message, result.targetAgent);
         return;
       }
 
@@ -123,10 +177,9 @@ export function useShellState() {
         return;
       }
 
-      // Fallback for anything unexpected
       addLog('error', `Unknown command: ${head}. Type /help for supported kernel commands.`);
     },
-    [currentRoom, mode, talkAgent, addLog, addEvent]
+    [currentRoom, mode, talkAgent, addLog, addEvent, kernelTalkGate, bridgeTalkStage]
   );
 
   const handleInputKeyDown = useCallback(
@@ -156,6 +209,7 @@ export function useShellState() {
       showAnnotations,
       logs,
       events,
+      bridgeStatus,
     },
     actions: {
       setCurrentRoom,
@@ -170,6 +224,7 @@ export function useShellState() {
       handleInputKeyDown,
       addLog,
       addEvent,
+      refreshBridgeStatus,
     },
     refs: {
       logEndRef,

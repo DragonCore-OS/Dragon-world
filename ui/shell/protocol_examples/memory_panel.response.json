@@ -1,0 +1,23 @@
+{
+  "_comment": "Example bridge response payload that could be used to hydrate a MemoryPanel. Not a formal dw-bridge-v1 endpoint yet, but aligned with the response shape.",
+  "protocolVersion": "dw-bridge-v1",
+  "responseType": "query_result",
+  "reply": {
+    "text": "Matrix Brain Status Record",
+    "style": "header"
+  },
+  "memoryUpdates": [
+    {
+      "scope": "agent_notebook",
+      "owner": "huaxia_zhenlongce",
+      "summary": "In the last 10 ticks, the pulse frequency of the Matrix Brain in the Archive Hall rose by 0.4%.",
+      "importance": "low"
+    }
+  ],
+  "patchProposals": [],
+  "toolTraceSummary": [
+    "memory_query",
+    "notebook_retrieval"
+  ],
+  "errors": []
+}

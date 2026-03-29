@@ -1,12 +1,12 @@
-# DragonWorld Frontend Shell v2.2
+# DragonWorld Frontend Shell v2.3
 
-This is the **frontend engineering shell** for DragonWorld. It is a React + Vite + TypeScript application that provides a visual interface to the deterministic world kernel.
+This is the **bridge-ready frontend engineering shell** for DragonWorld. It is a React + Vite + TypeScript application that provides a visual interface to the deterministic world kernel, with clear boundaries for future DeerFlow bridge integration.
 
 ## What this shell is
 
 - A **three-column UI** (Entity/Map | Visual+Terminal | Status/Memory/Forge)
 - A **local mock client** that simulates kernel commands and future bridge interactions
-- An **engineering baseline** for Stitch's v2.1 prototype, split into maintainable components
+- An **engineering baseline** with frozen `dw-bridge-v1` types and a three-mode bridge adapter
 
 ## Relationship to `dragon-world` kernel
 
@@ -16,7 +16,7 @@ This shell does **not** modify the Rust kernel. It reads from a frozen mock data
 - 5 agents
 - 6 objects
 
-When the kernel exposes a real API (e.g., via WebSocket or HTTP), the intended integration point is `src/adapters/kernelAdapter.ts`.
+When the kernel exposes a real API, the intended integration point is `src/adapters/kernelAdapter.ts`.
 
 ## Truth layers
 
@@ -34,6 +34,7 @@ These areas require the future DeerFlow bridge to generate real responses:
 - **Talk mode / VisualArea** — agent dialogue UI
 - **AI logs** — responses after `/talk <agent>`
 - **MemoryPanel** — agent notebook and memory summaries
+- **Bridge status observability** — latency, mode, last error
 
 ### `mock-only` (orange)
 These areas are conceptual UI placeholders. They do **not** modify the world:
@@ -63,28 +64,74 @@ ui/shell/
       truthLayers.ts     # Annotation system
     adapters/
       kernelAdapter.ts   # Local mock of kernel API
-      bridgeAdapter.ts   # Empty shell for DeerFlow integration
+      bridgeAdapter.ts   # Three-mode bridge adapter (mock/disabled/remote)
       mockAdapter.ts     # Forge/mock sample data
     hooks/
       useShellState.ts   # Central shell state + command dispatch
     types/
       world.ts           # Domain types
       ui.ts              # Theme and truth-layer types
+      bridge.ts          # Frozen dw-bridge-v1 types
     App.tsx
     main.tsx
+  protocol_examples/     # JSON samples for DeerFlow alignment
 ```
 
-## How to connect DeerFlow bridge later
+## Bridge Readiness
 
-1. Implement the real HTTP/WebSocket client inside `src/adapters/bridgeAdapter.ts`
-2. Keep the same interface (`sendAgentDialogue`, `requestMemoryPanel`, `getBridgeStatus`)
-3. `useShellState.ts` already awaits bridge responses — no UI component changes required
-4. Do **not** let the bridge directly mutate `kernelMockData`. All world mutations must go through `kernelAdapter` (or the real kernel API).
+### Frozen types: `dw-bridge-v1`
+All bridge communication shapes are frozen in `src/types/bridge.ts`:
 
-## Constraints maintained from v2.1
+- `BridgeRequest` — what the shell sends to DeerFlow
+- `BridgeResponse` — what DeerFlow must return
+- `BridgeReply`, `BridgeMemoryUpdate`, `BridgePatchProposal`, `BridgeError`
+- `ProposalPreview`, `ProposalImpact`, `ProposalStatus` — for mock-only Forge UI
 
-- `/talk`, `/inspect`, `/go` consume the **full remainder** of the command line (not just the first token)
+### Three-mode bridge adapter
+`src/adapters/bridgeAdapter.ts` supports three runtime modes, controlled by environment variables:
+
+| Mode | Env var | Behavior |
+|------|---------|----------|
+| `mock` | `VITE_BRIDGE_MODE=mock` | Returns local mock responses with simulated latency |
+| `disabled` | `VITE_BRIDGE_MODE=disabled` | Returns `BRIDGE_DISABLED` error immediately |
+| `remote` | `VITE_BRIDGE_MODE=remote` | Sends `fetch` to `VITE_BRIDGE_BASE_URL/v1/agent/respond` |
+
+Example:
+```bash
+VITE_BRIDGE_MODE=remote VITE_BRIDGE_BASE_URL=http://localhost:3001 npm run dev
+```
+
+### UI blocks that are already bridge-ready
+- **Command `/talk <agent>`** — kernel gate checks room membership, then bridge stage sends `BridgeRequest`
+- **Talk mode free-text input** — automatically routed to `sendAgentDialogue`
+- **Bridge status badge** — visible in TopBar and StatusPanel (mode, latency, last error)
+- **MemoryPanel** — already consumes `requestMemoryPanel()` from `bridgeAdapter`
+
+### What to change when DeerFlow is ready
+1. **Start with `src/adapters/bridgeAdapter.ts`**
+   - Ensure the remote endpoint matches `POST /v1/agent/respond`
+   - Verify request/response against `src/types/bridge.ts`
+
+2. **Verify `src/types/bridge.ts`**
+   - Make sure DeerFlow returns exactly the `BridgeResponse` shape
+   - Do not add fields that mutate world state directly
+
+3. **UI components should not need changes**
+   - `useShellState.ts` already awaits bridge responses
+   - `LogPanel` already renders `ai` and `bridge` log types
+   - `StatusPanel` already polls and displays `BridgeStatus`
+
+### Important constraint
+DeerFlow must **not** directly mutate `kernelMockData` or the seed world. All world mutations must go through:
+1. `patchProposals` in `BridgeResponse`
+2. Serialization to `proposals/patch-*.json`
+3. Governance approval
+4. Kernel execution via `kernelAdapter` or the real kernel API
+
+## Constraints maintained from v2.2
+
+- `/talk`, `/inspect`, `/go` consume the **full remainder** of the command line
 - Map node clicks only navigate to **adjacent rooms**
-- Tailwind classes are **pre-baked static maps** — no runtime `bg-${accent}-500` strings
-- Forge remains **mock-only** — no real proposal flow
+- Tailwind classes are **pre-baked static maps**
+- Forge remains **mock-only**
 - No modifications to `crates/*` or `apps/cli`
