@@ -4,20 +4,26 @@
 
 ## 當前未決問題
 
-1. **桌面自動化適配器選型**
-   - 選項 A: `pyautogui` + `Pillow`（簡單、跨平台、不穩定）
-   - 選項 B: `playwright`（僅瀏覽器）
-   - 選項 C: `Appium` / `WinAppDriver`（Windows 原生）
-   - 選項 D: 自研基於 OS API 的適配器（長期正確、短期成本高）
-   - **影響**：阻塞 Phase 1 的桌面操作流
-
-2. **OCR 後端選型**
-   - 選項 A: `paddleocr`（中文強、重）
-   - 選項 B: `easyocr`（中等）
-   - 選項 C: 調用 Kimi 多模態 API（簡單、有成本、有延遲）
-   - 選項 D: `tesseract`（輕量、中文弱）
-   - **影響**：阻塞 Phase 2 的 verification loop
+_暫無阻塞性未決問題。選型已在 ADR-0005、ADR-0006 和 docs/05_action_plane_selection.md 中凍結。_
 
 ## 已解決問題（歸檔區）
 
-_暫無_
+### 1. 桌面自動化適配器選型 ✅
+**決策日期**：2026-03-31  
+**決策結果**：
+- **v1 平台**：Windows 11 only
+- **Browser**：Playwright (Python)
+- **Desktop**：`pywinauto` with UIA backend
+- **輔助**：`pyautogui` 僅用於全局快捷鍵/截圖
+- **兜底**：純座標點擊（標記為 fragile）
+
+**參考文件**：`docs/adr/ADR-0005-windows11-only.md`、`docs/adr/ADR-0006-windows-action-plane.md`、`docs/05_action_plane_selection.md`
+
+### 2. OCR 後端選型 ✅
+**決策日期**：2026-03-31  
+**決策結果**：
+- **OCR 不做主路徑**，只做 fallback
+- **Fallback 首選**：Kimi 多模態 API（截圖 -> 文字描述/定位）
+- **本地備用**：PaddleOCR（網絡不穩或成本敏感時啟用）
+
+**參考文件**：`docs/adr/ADR-0006-windows-action-plane.md`、`docs/05_action_plane_selection.md`

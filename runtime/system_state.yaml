@@ -1,6 +1,6 @@
 project: Dragon-system
 version: 0.1.0
-last_updated: "2026-03-31T03:20:00+08:00"
+last_updated: "2026-03-31T03:30:00+08:00"
 
 north_star: >
   Build an AI-first system control plane combining voice runtime,
@@ -15,11 +15,15 @@ active_provider:
 phases:
   phase_0:
     title: "Anti-amnesia infrastructure"
-    status: in_progress
+    status: done
     description: "Monorepo skeleton, docs, runtime state, handoff scripts"
+  phase_0_5:
+    title: "Boundary freeze & platform selection"
+    status: done
+    description: "Harden boot protocol, select Windows 11 + UIA + Playwright"
   phase_1:
     title: "Voice -> LLM -> Action backbone"
-    status: pending
+    status: in_progress
     description: "Wire TryVoice + Kimi + first action compiler loop"
   phase_2:
     title: "Verification loop"
@@ -65,35 +69,35 @@ active_modules:
     path: packages/provider-sdk/
 
 current_goal:
-  id: P0-M1
-  title: "Establish monorepo skeleton and context persistence protocol"
+  id: P1-M1
+  title: "Build Windows-first action plane and Kimi provider SDK"
   description: >
-    Create docs/adr, runtime/, handoff/, specs/, scripts/ structures.
-    Write initial architecture docs, state files, schemas, and boot scripts.
-    Update README to reflect Dragon-system positioning.
+    Implement Kimi provider SDK, action compiler, Playwright browser adapter,
+    pywinauto desktop adapter, and verifier loop on Windows 11.
+    Wire TryVoice minimal bridge for end-to-end voice demo.
 
 next_actions:
-  - id: P0-T1
-    title: "Create all docs and ADR files"
+  - id: P0-T6
+    title: "Harden anti-amnesia protocol with tests and integrity checker"
     status: done
-  - id: P0-T2
-    title: "Create runtime state files and schemas"
+  - id: P0-T7
+    title: "Freeze Windows 11 + UIA + Playwright action plane selection"
     status: done
-  - id: P0-T3
-    title: "Implement bootstrap_context.py, update_state.py, generate_handoff.py"
-    status: done
-  - id: P0-T4
-    title: "Update README.md with Dragon-system north star"
-    status: done
-  - id: P0-T5
-    title: "Git commit and push to remote"
-    status: done
+  - id: P1-T1
+    title: "Implement Kimi provider SDK"
+    status: in_progress
+  - id: P1-T2
+    title: "Build action compiler and browser adapter"
+    status: pending
+  - id: P1-T3
+    title: "Build desktop adapter and verifier"
+    status: pending
 
 blocked_by:
-  - item: "Desktop automation adapter not yet chosen"
-    impact: "Blocks Phase 1 action plane for desktop ops"
-  - item: "OCR backend not yet finalized"
-    impact: "Blocks Phase 2 verification loop"
+  - item: "Need Windows 11 dev machine for pywinauto/Playwright live testing"
+    impact: "Blocks live validation of desktop adapter"
+  - item: "TryVoice minimal bridge design not yet detailed"
+    impact: "Blocks end-to-end voice demo"
 
 hard_invariants:
   - "kernel never imports harness"
@@ -102,7 +106,7 @@ hard_invariants:
   - "every session updates handoff packet"
 
 metrics:
-  total_adrs: 3
+  total_adrs: 6
   total_specs: 4
-  open_questions: 2
+  open_questions: 0
   known_issues: 0

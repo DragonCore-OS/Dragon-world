@@ -1,5 +1,5 @@
 version: "0.1.0"
-last_updated: "2026-03-31T03:20:00+08:00"
+last_updated: "2026-03-31T03:30:00+08:00"
 
 sprints:
   - id: S0
@@ -13,6 +13,18 @@ sprints:
       - "Create automation scripts"
 
 tasks:
+  - id: P0-M1
+    title: "Establish monorepo skeleton and context persistence protocol"
+    status: done
+    completed_at: "2026-03-31T03:20:00+08:00"
+    owner: kimi-cli
+    sprint: S0
+    layer: meta
+    blocked_by: []
+    acceptance_criteria:
+      - "docs/adr/runtime/handoff/specs/scripts structures exist"
+      - "boot protocol documented and executable"
+
   - id: P0-T1
     title: "Create architecture docs and ADRs"
     status: done
@@ -76,8 +88,48 @@ tasks:
       - "All new files committed"
       - "Pushed to origin/main or feature branch"
 
+  - id: P0-T6
+    title: "Harden anti-amnesia protocol with tests and integrity checker"
+    status: done
+    completed_at: "2026-03-31T03:30:00+08:00"
+    owner: kimi-cli
+    sprint: S0
+    layer: scripts
+    blocked_by: [P0-T5]
+    acceptance_criteria:
+      - "scripts/test_bootstrap.py passes"
+      - "scripts/check_boot_integrity.py passes"
+      - "CI/local check mechanism documented"
+
+  - id: P0-T7
+    title: "Freeze Windows 11 + UIA + Playwright action plane selection"
+    status: done
+    completed_at: "2026-03-31T03:30:00+08:00"
+    owner: kimi-cli
+    sprint: S0
+    layer: docs
+    blocked_by: [P0-T5]
+    acceptance_criteria:
+      - "ADR-0005 accepted: Windows 11 only"
+      - "ADR-0006 accepted: UIA-first, OCR fallback"
+      - "docs/05_action_plane_selection.md exists"
+      - "docs/06_phase1_execution_plan.md exists"
+
+  - id: P1-M1
+    title: "Build Windows-first action plane and Kimi provider SDK"
+    status: in_progress
+    owner: TBD
+    sprint: null
+    layer: meta
+    blocked_by: [P0-T7]
+    acceptance_criteria:
+      - "KimiProvider implementation works"
+      - "Playwright adapter can search in browser"
+      - "pywinauto adapter can type in Notepad"
+      - "Verifier loop checks pre/post conditions"
+
   - id: P1-T1
-    title: "Wire TryVoice as voice runtime"
+    title: "Implement Kimi provider SDK"
     status: pending
     owner: TBD
     sprint: null
@@ -99,15 +151,49 @@ tasks:
       - "KimiProvider implementation works"
       - "Environment-based API key loading"
 
+  - id: P1-T2
+    title: "Build action compiler and browser adapter"
+    status: pending
+    owner: TBD
+    sprint: null
+    layer: action-plane
+    blocked_by: [P1-T1]
+    acceptance_criteria:
+      - "Action compiler outputs valid Action Schema"
+      - "Playwright adapter can launch Edge and perform search"
+
   - id: P1-T3
-    title: "Build first action compiler"
+    title: "Build desktop adapter and verifier"
     status: pending
     owner: TBD
     sprint: null
     layer: action-plane
     blocked_by: [P1-T2]
     acceptance_criteria:
-      - "Natural language -> Action Schema"
-      - "5 demo actions stable for 20 runs"
+      - "pywinauto adapter can launch Notepad and type text"
+      - "Verifier loop checks pre/post conditions"
+
+  - id: P1-T4
+    title: "Wire TryVoice minimal bridge"
+    status: pending
+    owner: TBD
+    sprint: null
+    layer: apps
+    blocked_by: [P1-T3]
+    acceptance_criteria:
+      - "Voice input triggers action compiler"
+      - "TTS reads back execution result"
+
+  - id: P1-T5
+    title: "Golden demo chains stable"
+    status: pending
+    owner: TBD
+    sprint: null
+    layer: integration
+    blocked_by: [P1-T4]
+    acceptance_criteria:
+      - "Browser search demo >= 90% over 20 runs"
+      - "Notepad demo >= 90% over 20 runs"
+      - "WeChat message demo >= 90% over 20 runs"
 
 archived_tasks: []
