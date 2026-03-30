@@ -1,16 +1,27 @@
 version: "0.1.0"
-last_updated: "2026-03-31T03:30:00+08:00"
+last_updated: "2026-03-31T03:40:00+08:00"
 
 sprints:
   - id: S0
     title: "Foundation Sprint"
-    status: in_progress
+    status: done
     start_date: "2026-03-31"
     end_date: "2026-04-07"
     goals:
       - "Establish anti-amnesia protocol"
       - "Define architecture and boundaries"
       - "Create automation scripts"
+
+  - id: S1
+    title: "Dual-Node Action Plane Sprint"
+    status: in_progress
+    start_date: "2026-04-07"
+    end_date: "2026-04-21"
+    goals:
+      - "Implement Kimi provider SDK on Linux"
+      - "Build action compiler and adapter interfaces"
+      - "Establish Windows execution runner and smoke tests"
+      - "Demonstrate Linux -> Windows action handoff"
 
 tasks:
   - id: P0-M1
@@ -115,82 +126,134 @@ tasks:
       - "docs/05_action_plane_selection.md exists"
       - "docs/06_phase1_execution_plan.md exists"
 
-  - id: P1-M1
-    title: "Build Windows-first action plane and Kimi provider SDK"
-    status: in_progress
-    owner: TBD
-    sprint: null
-    layer: meta
+  - id: P0-T8
+    title: "Add ADR-0007 dual-node topology and execution runner docs"
+    status: done
+    completed_at: "2026-03-31T03:40:00+08:00"
+    owner: kimi-cli
+    sprint: S0
+    layer: docs
     blocked_by: [P0-T7]
     acceptance_criteria:
-      - "KimiProvider implementation works"
-      - "Playwright adapter can search in browser"
-      - "pywinauto adapter can type in Notepad"
-      - "Verifier loop checks pre/post conditions"
+      - "ADR-0007 accepted: dual-node topology"
+      - "docs/07_windows_execution_runner.md exists"
+      - "specs/execution_result_schema.json exists"
+
+  - id: P1-M1
+    title: "Build dual-node action plane and Kimi provider SDK"
+    status: in_progress
+    owner: TBD
+    sprint: S1
+    layer: meta
+    blocked_by: [P0-T8]
+    acceptance_criteria:
+      - "KimiProvider implementation works on Linux"
+      - "Action compiler outputs valid Action Schema"
+      - "Windows Runner can execute browser and desktop smoke tests"
+      - "Execution result handoff works end-to-end"
 
   - id: P1-T1
-    title: "Implement Kimi provider SDK"
-    status: pending
+    title: "Implement Kimi provider SDK on Linux"
+    status: in_progress
     owner: TBD
-    sprint: null
-    layer: apps
-    blocked_by: [P0-T5]
-    acceptance_criteria:
-      - "Voice input can trigger system event"
-      - "TTS output works end-to-end"
-
-  - id: P1-T2
-    title: "Implement Kimi provider SDK"
-    status: pending
-    owner: TBD
-    sprint: null
+    sprint: S1
     layer: packages
-    blocked_by: [P0-T5]
+    blocked_by: [P0-T8]
     acceptance_criteria:
       - "DragonLLMProvider protocol defined"
       - "KimiProvider implementation works"
       - "Environment-based API key loading"
+      - "Unit tests pass on Linux"
 
   - id: P1-T2
-    title: "Build action compiler and browser adapter"
+    title: "Build action compiler and adapter interfaces on Linux"
     status: pending
     owner: TBD
-    sprint: null
+    sprint: S1
     layer: action-plane
     blocked_by: [P1-T1]
     acceptance_criteria:
       - "Action compiler outputs valid Action Schema"
-      - "Playwright adapter can launch Edge and perform search"
+      - "BrowserAdapter / DesktopAdapter interfaces defined"
+      - "Mock adapters pass unit tests on Linux"
 
   - id: P1-T3
-    title: "Build desktop adapter and verifier"
+    title: "Define verifier contract and mock adapters on Linux"
     status: pending
     owner: TBD
-    sprint: null
+    sprint: S1
     layer: action-plane
     blocked_by: [P1-T2]
     acceptance_criteria:
-      - "pywinauto adapter can launch Notepad and type text"
-      - "Verifier loop checks pre/post conditions"
+      - "PreconditionRunner / PostconditionRunner interfaces defined"
+      - "Mock verifier passes unit tests on Linux"
 
   - id: P1-T4
+    title: "Build execution result consumer on Linux"
+    status: pending
+    owner: TBD
+    sprint: S1
+    layer: action-plane
+    blocked_by: [P1-T3]
+    acceptance_criteria:
+      - "Can parse execution_result_schema.json"
+      - "Feedback loop to action compiler documented"
+
+  - id: P1-T5
+    title: "Windows browser smoke runner with Playwright"
+    status: pending
+    owner: TBD
+    sprint: S1
+    layer: windows-runner
+    blocked_by: [P1-T2]
+    acceptance_criteria:
+      - "Playwright installed on Windows 11"
+      - "Can launch Edge and perform search"
+      - "Outputs valid execution_result_schema.json"
+
+  - id: P1-T6
+    title: "Windows desktop smoke runner with pywinauto"
+    status: pending
+    owner: TBD
+    sprint: S1
+    layer: windows-runner
+    blocked_by: [P1-T2]
+    acceptance_criteria:
+      - "pywinauto installed on Windows 11"
+      - "Can launch Notepad and type text"
+      - "Outputs valid execution_result_schema.json"
+
+  - id: P1-T7
+    title: "Execution result handoff between Linux and Windows"
+    status: pending
+    owner: TBD
+    sprint: S1
+    layer: integration
+    blocked_by: [P1-T4, P1-T5, P1-T6]
+    acceptance_criteria:
+      - "Linux can generate action plan to runs/inbox/"
+      - "Windows can execute and write to runs/outbox/"
+      - "Results are committed and pushed to GitHub"
+      - "Linux can pull and consume results"
+
+  - id: P1-T8
     title: "Wire TryVoice minimal bridge"
     status: pending
     owner: TBD
-    sprint: null
+    sprint: S1
     layer: apps
-    blocked_by: [P1-T3]
+    blocked_by: [P1-T7]
     acceptance_criteria:
       - "Voice input triggers action compiler"
       - "TTS reads back execution result"
 
-  - id: P1-T5
+  - id: P1-T9
     title: "Golden demo chains stable"
     status: pending
     owner: TBD
-    sprint: null
+    sprint: S1
     layer: integration
-    blocked_by: [P1-T4]
+    blocked_by: [P1-T8]
     acceptance_criteria:
       - "Browser search demo >= 90% over 20 runs"
       - "Notepad demo >= 90% over 20 runs"

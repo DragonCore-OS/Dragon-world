@@ -20,10 +20,12 @@ REQUIRED_FILES = [
     "handoff/latest_boot_packet.md",
     "docs/01_system_architecture.md",
     "docs/dragon_system_boot_protocol.md",
+    "docs/07_windows_execution_runner.md",
     "specs/action_schema.json",
     "specs/event_schema.json",
     "specs/skill_schema.json",
     "specs/provider_schema.json",
+    "specs/execution_result_schema.json",
 ]
 
 REQUIRED_ADRS = [
@@ -33,6 +35,7 @@ REQUIRED_ADRS = [
     "docs/adr/ADR-0004-repo-semantic-upgrade.md",
     "docs/adr/ADR-0005-windows11-only.md",
     "docs/adr/ADR-0006-windows-action-plane.md",
+    "docs/adr/ADR-0007-dual-node-topology.md",
 ]
 
 

@@ -1,6 +1,6 @@
 project: Dragon-system
 version: 0.1.0
-last_updated: "2026-03-31T03:30:00+08:00"
+last_updated: "2026-03-31T03:40:00+08:00"
 
 north_star: >
   Build an AI-first system control plane combining voice runtime,
@@ -70,32 +70,39 @@ active_modules:
 
 current_goal:
   id: P1-M1
-  title: "Build Windows-first action plane and Kimi provider SDK"
+  title: "Build dual-node action plane and Kimi provider SDK"
   description: >
-    Implement Kimi provider SDK, action compiler, Playwright browser adapter,
-    pywinauto desktop adapter, and verifier loop on Windows 11.
-    Wire TryVoice minimal bridge for end-to-end voice demo.
+    Linux authoring node: implement Kimi provider SDK, action compiler,
+    adapter interfaces, verifier contract. Windows execution node:
+    implement Playwright/pywinauto smoke runners and execution result handoff.
+    Wire TryVoice minimal bridge after action loop is stable.
 
 next_actions:
-  - id: P0-T6
-    title: "Harden anti-amnesia protocol with tests and integrity checker"
-    status: done
-  - id: P0-T7
-    title: "Freeze Windows 11 + UIA + Playwright action plane selection"
+  - id: P0-T8
+    title: "Add ADR-0007 dual-node topology and execution runner docs"
     status: done
   - id: P1-T1
-    title: "Implement Kimi provider SDK"
+    title: "Implement Kimi provider SDK on Linux"
     status: in_progress
   - id: P1-T2
-    title: "Build action compiler and browser adapter"
+    title: "Build action compiler and adapter interfaces on Linux"
     status: pending
   - id: P1-T3
-    title: "Build desktop adapter and verifier"
+    title: "Define verifier contract and mock adapters on Linux"
+    status: pending
+  - id: P1-T5
+    title: "Windows browser smoke runner with Playwright"
+    status: pending
+  - id: P1-T6
+    title: "Windows desktop smoke runner with pywinauto"
+    status: pending
+  - id: P1-T7
+    title: "Execution result handoff between Linux and Windows"
     status: pending
 
 blocked_by:
-  - item: "Need Windows 11 dev machine for pywinauto/Playwright live testing"
-    impact: "Blocks live validation of desktop adapter"
+  - item: "Need to establish Linux authoring -> Windows execution validation workflow"
+    impact: "Blocks end-to-end verification of action plane on real Windows machine"
   - item: "TryVoice minimal bridge design not yet detailed"
     impact: "Blocks end-to-end voice demo"
 
@@ -106,7 +113,7 @@ hard_invariants:
   - "every session updates handoff packet"
 
 metrics:
-  total_adrs: 6
-  total_specs: 4
+  total_adrs: 7
+  total_specs: 5
   open_questions: 0
   known_issues: 0

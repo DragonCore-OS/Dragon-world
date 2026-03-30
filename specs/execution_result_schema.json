@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://dragon-system.local/specs/execution_result_schema.json",
+  "title": "Dragon-system Execution Result Schema",
+  "description": "Schema for results emitted by the Windows Execution Runner",
+  "version": "0.1.0",
+  "type": "object",
+  "required": ["run_id", "platform", "status", "started_at", "ended_at", "steps"],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "Unique identifier for this execution run"
+    },
+    "platform": {
+      "type": "string",
+      "enum": ["windows11"],
+      "description": "Execution platform"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["success", "partial_success", "failure", "aborted"],
+      "description": "Overall execution status"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ended_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["action_id", "status"],
+        "properties": {
+          "action_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["success", "failure", "skipped", "timeout"]
+          },
+          "observation": {
+            "type": "string",
+            "description": "Human-readable description of what happened"
+          },
+          "duration_ms": {
+            "type": "integer"
+          },
+          "screenshot": {
+            "type": "string",
+            "description": "Relative path to screenshot artifact"
+          }
+        }
+      }
+    },
+    "precondition_result": {
+      "type": "object",
+      "properties": {
+        "passed": { "type": "boolean" },
+        "details": { "type": "string" }
+      }
+    },
+    "postcondition_result": {
+      "type": "object",
+      "properties": {
+        "passed": { "type": "boolean" },
+        "details": { "type": "string" }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Relative paths to artifact files"
+      }
+    },
+    "error": {
+      "type": ["object", "null"],
+      "properties": {
+        "code": { "type": "string" },
+        "message": { "type": "string" },
+        "traceback": { "type": "string" }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "runner_version": { "type": "string" },
+        "pywinauto_version": { "type": "string" },
+        "playwright_version": { "type": "string" },
+        "screen_resolution": { "type": "string" }
+      }
+    }
+  }
+}
