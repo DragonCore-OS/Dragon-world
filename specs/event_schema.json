@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://dragon-system.local/specs/event_schema.json",
+  "title": "Dragon-system Event Schema",
+  "description": "Schema for all events emitted across layers",
+  "version": "0.1.0",
+  "type": "object",
+  "required": ["event_id", "timestamp", "source_layer", "source_module", "event_type", "payload"],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "correlation_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Links event to a session or task"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_layer": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4,
+      "description": "0=Kernel, 1=Harness, 2=Action, 3=Control, 4=Shell"
+    },
+    "source_module": {
+      "type": "string",
+      "description": "Name of the emitting module"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": ["state_change", "action_executed", "action_failed", "error", "audit", "user_input", "system_output", "skill_invoked", "agent_registered"]
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["debug", "info", "warning", "error", "critical"],
+      "default": "info"
+    },
+    "payload": {
+      "type": "object",
+      "description": "Event-specific data"
+    },
+    "trace": {
+      "type": "object",
+      "properties": {
+        "action_id": { "type": "string", "format": "uuid" },
+        "agent_id": { "type": "string" },
+        "session_id": { "type": "string" }
+      }
+    }
+  }
+}

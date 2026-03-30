@@ -1,0 +1,112 @@
+version: "0.1.0"
+last_updated: "2026-03-31T03:20:00+08:00"
+
+sprints:
+  - id: S0
+    title: "Foundation Sprint"
+    status: in_progress
+    start_date: "2026-03-31"
+    end_date: "2026-04-07"
+    goals:
+      - "Establish anti-amnesia protocol"
+      - "Define architecture and boundaries"
+      - "Create automation scripts"
+
+tasks:
+  - id: P0-T1
+    title: "Create architecture docs and ADRs"
+    status: done
+    completed_at: "2026-03-31T03:20:00+08:00"
+    owner: kimi-cli
+    sprint: S0
+    layer: docs
+    blocked_by: []
+    acceptance_criteria:
+      - "docs/00-04 *.md exist"
+      - "3 ADRs exist and accepted"
+      - "boot protocol documented"
+
+  - id: P0-T2
+    title: "Create runtime state files and JSON schemas"
+    status: done
+    completed_at: "2026-03-31T03:20:00+08:00"
+    owner: kimi-cli
+    sprint: S0
+    layer: runtime
+    blocked_by: []
+    acceptance_criteria:
+      - "system_state.yaml exists and validates"
+      - "task_graph.yaml exists and validates"
+      - "4 specs/*.json exist"
+
+  - id: P0-T3
+    title: "Implement context persistence scripts"
+    status: done
+    completed_at: "2026-03-31T03:20:00+08:00"
+    owner: kimi-cli
+    sprint: S0
+    layer: scripts
+    blocked_by: [P0-T1, P0-T2]
+    acceptance_criteria:
+      - "bootstrap_context.py runs without error"
+      - "update_state.py updates YAML correctly"
+      - "generate_handoff.py produces valid markdown"
+
+  - id: P0-T4
+    title: "Update README and repo metadata"
+    status: done
+    completed_at: "2026-03-31T03:20:00+08:00"
+    owner: kimi-cli
+    sprint: S0
+    layer: docs
+    blocked_by: [P0-T1]
+    acceptance_criteria:
+      - "README reflects Dragon-system positioning"
+      - "Old Phase 1 description preserved but contextualized"
+
+  - id: P0-T5
+    title: "Commit and push to GitHub"
+    status: in_progress
+    owner: kimi-cli
+    sprint: S0
+    layer: ops
+    blocked_by: [P0-T3, P0-T4]
+    acceptance_criteria:
+      - "All new files committed"
+      - "Pushed to origin/main or feature branch"
+
+  - id: P1-T1
+    title: "Wire TryVoice as voice runtime"
+    status: pending
+    owner: TBD
+    sprint: null
+    layer: apps
+    blocked_by: [P0-T5]
+    acceptance_criteria:
+      - "Voice input can trigger system event"
+      - "TTS output works end-to-end"
+
+  - id: P1-T2
+    title: "Implement Kimi provider SDK"
+    status: pending
+    owner: TBD
+    sprint: null
+    layer: packages
+    blocked_by: [P0-T5]
+    acceptance_criteria:
+      - "DragonLLMProvider protocol defined"
+      - "KimiProvider implementation works"
+      - "Environment-based API key loading"
+
+  - id: P1-T3
+    title: "Build first action compiler"
+    status: pending
+    owner: TBD
+    sprint: null
+    layer: action-plane
+    blocked_by: [P1-T2]
+    acceptance_criteria:
+      - "Natural language -> Action Schema"
+      - "5 demo actions stable for 20 runs"
+
+archived_tasks: []

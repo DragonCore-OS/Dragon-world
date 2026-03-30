@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://dragon-system.local/specs/action_schema.json",
+  "title": "Dragon-system Action Schema",
+  "description": "Schema for actions emitted by Agent Harness and executed by Action Plane",
+  "version": "0.1.0",
+  "type": "object",
+  "required": ["action_id", "type", "payload", "precondition", "postcondition", "failure_strategy"],
+  "properties": {
+    "action_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for this action"
+    },
+    "correlation_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Links this action to a session or task"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["browser", "desktop", "voice", "kernel", "api_call", "composite"],
+      "description": "Category of the action"
+    },
+    "precondition": {
+      "type": "object",
+      "required": ["assertions"],
+      "properties": {
+        "assertions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["kind", "target"],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": ["element_exists", "url_is", "window_title", "file_exists", "voice_ready", "kernel_state"]
+              },
+              "target": { "type": "string" },
+              "value": { "type": "string" }
+            }
+          }
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "default": 5000
+        }
+      }
+    },
+    "payload": {
+      "type": "object",
+      "description": "Action-specific parameters"
+    },
+    "postcondition": {
+      "type": "object",
+      "required": ["assertions"],
+      "properties": {
+        "assertions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["kind", "target"],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": ["element_exists", "url_is", "window_title", "file_exists", "text_contains", "kernel_state"]
+              },
+              "target": { "type": "string" },
+              "value": { "type": "string" }
+            }
+          }
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "default": 10000
+        }
+      }
+    },
+    "failure_strategy": {
+      "type": "object",
+      "required": ["mode"],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["retry", "fallback", "abort", "escalate"]
+        },
+        "max_retries": {
+          "type": "integer",
+          "default": 0
+        },
+        "fallback_action_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "escalate_to": {
+          "type": "string",
+          "description": "Module or human role to escalate to"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "created_at": { "type": "string", "format": "date-time" },
+        "source_agent": { "type": "string" },
+        "skill_id": { "type": "string" }
+      }
+    }
+  }
+}

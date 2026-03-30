@@ -1,0 +1,108 @@
+project: Dragon-system
+version: 0.1.0
+last_updated: "2026-03-31T03:20:00+08:00"
+
+north_star: >
+  Build an AI-first system control plane combining voice runtime,
+  agent harness, deterministic kernel, and governance plane.
+
+active_provider:
+  llm: kimi
+  cli: kimi-cli
+  embedding: pending
+  reranker: pending
+
+phases:
+  phase_0:
+    title: "Anti-amnesia infrastructure"
+    status: in_progress
+    description: "Monorepo skeleton, docs, runtime state, handoff scripts"
+  phase_1:
+    title: "Voice -> LLM -> Action backbone"
+    status: pending
+    description: "Wire TryVoice + Kimi + first action compiler loop"
+  phase_2:
+    title: "Verification loop"
+    status: pending
+    description: "Screen capture, OCR, precondition/postcondition"
+  phase_3:
+    title: "Agent harness integration"
+    status: pending
+    description: "DeerFlow skills, subagents, memory, sandbox"
+  phase_4:
+    title: "Control plane & governance"
+    status: pending
+    description: "Scheduler, budgets, audit, agent registry"
+  phase_5:
+    title: "Skill marketplace & growth"
+    status: pending
+    description: "Skill provenance, node identity, marketplace metadata"
+
+active_modules:
+  kernel:
+    status: scaffolded
+    repo_source: Dragon-world
+    path: crates/
+  voice_runtime:
+    status: planned
+    repo_source: tryvoice
+    path: apps/voice-runtime/
+  harness:
+    status: planned
+    repo_source: deer-flow
+    path: bridges/deerflow/
+  control_plane:
+    status: planned
+    repo_source: paperclip-inspired
+    path: apps/server/
+  experience_shell:
+    status: planned
+    repo_source: internal
+    path: ui/
+  provider_sdk:
+    status: planned
+    repo_source: internal
+    path: packages/provider-sdk/
+
+current_goal:
+  id: P0-M1
+  title: "Establish monorepo skeleton and context persistence protocol"
+  description: >
+    Create docs/adr, runtime/, handoff/, specs/, scripts/ structures.
+    Write initial architecture docs, state files, schemas, and boot scripts.
+    Update README to reflect Dragon-system positioning.
+
+next_actions:
+  - id: P0-T1
+    title: "Create all docs and ADR files"
+    status: done
+  - id: P0-T2
+    title: "Create runtime state files and schemas"
+    status: done
+  - id: P0-T3
+    title: "Implement bootstrap_context.py, update_state.py, generate_handoff.py"
+    status: done
+  - id: P0-T4
+    title: "Update README.md with Dragon-system north star"
+    status: done
+  - id: P0-T5
+    title: "Git commit and push to remote"
+    status: in_progress
+
+blocked_by:
+  - item: "Desktop automation adapter not yet chosen"
+    impact: "Blocks Phase 1 action plane for desktop ops"
+  - item: "OCR backend not yet finalized"
+    impact: "Blocks Phase 2 verification loop"
+
+hard_invariants:
+  - "kernel never imports harness"
+  - "provider access goes through unified interface"
+  - "every module writes audit events"
+  - "every session updates handoff packet"
+
+metrics:
+  total_adrs: 3
+  total_specs: 4
+  open_questions: 2
+  known_issues: 0

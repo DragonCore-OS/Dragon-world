@@ -1,0 +1,120 @@
+version: "0.1.0"
+last_updated: "2026-03-31T03:15:00+08:00"
+
+modules:
+  - name: world-core
+    type: rust-crate
+    layer: 0
+    path: crates/world-core/
+    interface_file: crates/world-core/src/lib.rs
+    status: stable
+    schema_version: "0.1.0"
+    owners: [dragon-world]
+
+  - name: world-loader
+    type: rust-crate
+    layer: 0
+    path: crates/world-loader/
+    interface_file: crates/world-loader/src/lib.rs
+    status: stable
+    schema_version: "0.1.0"
+    owners: [dragon-world]
+
+  - name: command-parser
+    type: rust-crate
+    layer: 0
+    path: crates/command-parser/
+    interface_file: crates/command-parser/src/lib.rs
+    status: stable
+    schema_version: "0.1.0"
+    owners: [dragon-world]
+
+  - name: event-store
+    type: rust-crate
+    layer: 0
+    path: crates/event-store/
+    interface_file: crates/event-store/src/lib.rs
+    status: stable
+    schema_version: "0.1.0"
+    owners: [dragon-world]
+
+  - name: snapshot
+    type: rust-crate
+    layer: 0
+    path: crates/snapshot/
+    interface_file: crates/snapshot/src/lib.rs
+    status: stable
+    schema_version: "0.1.0"
+    owners: [dragon-world]
+
+  - name: dragon-world-cli
+    type: rust-app
+    layer: 0
+    path: apps/cli/
+    interface_file: apps/cli/src/main.rs
+    status: stable
+    schema_version: "0.1.0"
+    owners: [dragon-world]
+
+  - name: dragon-system-server
+    type: rust-app
+    layer: 3
+    path: apps/server/
+    interface_file: apps/server/src/main.rs
+    status: scaffolded
+    schema_version: "0.1.0"
+    owners: [dragon-system]
+
+  - name: deerflow-bridge
+    type: python-bridge
+    layer: 1
+    path: bridges/deerflow/
+    interface_file: bridges/deerflow/CONTRACT.md
+    status: planned
+    schema_version: "0.1.0"
+    owners: [deer-flow, dragon-system]
+
+  - name: paperclip-bridge
+    type: concept-bridge
+    layer: 3
+    path: bridges/paperclip/
+    interface_file: bridges/paperclip/CONTRACT.md
+    status: planned
+    schema_version: "0.1.0"
+    owners: [paperclip, dragon-system]
+
+  - name: provider-sdk
+    type: python-package
+    layer: cross
+    path: packages/provider-sdk/
+    interface_file: packages/provider-sdk/__init__.py
+    status: planned
+    schema_version: "0.1.0"
+    owners: [dragon-system]
+
+  - name: skill-sdk
+    type: python-package
+    layer: cross
+    path: packages/skill-sdk/
+    interface_file: packages/skill-sdk/__init__.py
+    status: planned
+    schema_version: "0.1.0"
+    owners: [dragon-system]
+
+  - name: event-sdk
+    type: python-package
+    layer: cross
+    path: packages/event-sdk/
+    interface_file: packages/event-sdk/__init__.py
+    status: planned
+    schema_version: "0.1.0"
+    owners: [dragon-system]
+
+  - name: experience-shell
+    type: ts-web-app
+    layer: 4
+    path: ui/
+    interface_file: ui/package.json
+    status: planned
+    schema_version: "0.1.0"
+    owners: [dragon-system]

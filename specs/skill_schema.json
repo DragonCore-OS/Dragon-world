@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://dragon-system.local/specs/skill_schema.json",
+  "title": "Dragon-system Skill Schema",
+  "description": "Schema for skills loaded by Agent Harness",
+  "version": "0.1.0",
+  "type": "object",
+  "required": ["skill_id", "version", "name", "entrypoint", "input_schema", "output_schema", "sandbox_policy"],
+  "properties": {
+    "skill_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "entrypoint": {
+      "type": "string",
+      "description": "Import path or function reference"
+    },
+    "input_schema": {
+      "type": "object",
+      "$ref": "http://json-schema.org/draft-07/schema#"
+    },
+    "output_schema": {
+      "type": "object",
+      "$ref": "http://json-schema.org/draft-07/schema#"
+    },
+    "sandbox_policy": {
+      "type": "object",
+      "required": ["network", "filesystem", "subprocess"],
+      "properties": {
+        "network": {
+          "type": "string",
+          "enum": ["none", "restricted", "full"]
+        },
+        "filesystem": {
+          "type": "string",
+          "enum": ["none", "read_only", "workspace", "full"]
+        },
+        "subprocess": {
+          "type": "boolean"
+        },
+        "allowed_hosts": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["skill_id", "version_range"],
+        "properties": {
+          "skill_id": { "type": "string" },
+          "version_range": { "type": "string" }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "author": { "type": "string" },
+        "license": { "type": "string" },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}
