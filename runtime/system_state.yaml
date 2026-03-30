@@ -87,7 +87,7 @@ next_actions:
     status: done
   - id: P0-T5
     title: "Git commit and push to remote"
-    status: in_progress
+    status: done
 
 blocked_by:
   - item: "Desktop automation adapter not yet chosen"
